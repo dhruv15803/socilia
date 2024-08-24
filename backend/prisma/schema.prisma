@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String           @id @default(uuid())
+  username               String           @unique
+  email                  String           @unique
+  password               String
+  user_image             String?
+  firstName              String?
+  lastName               String?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime?
+  bio_data               String?
+  Following              Following[]      @relation("follower_id")
+  Followers              Following[]      @relation("following_id")
+  Posts                  Post[]
+  Comment                Comment[]
+  PostLike               PostLike[]
+  CommentLike            CommentLike[]
+  FollowRequestsReceived FollowRequests[] @relation("request_receiver")
+  FollowRequestsSent     FollowRequests[] @relation("request_sender")
+}
+
+model Following {
+  follower     User   @relation("follower_id", fields: [follower_id], references: [id])
+  follower_id  String
+  following    User   @relation("following_id", fields: [following_id], references: [id])
+  following_id String
+
+  @@unique([follower_id, following_id])
+}
+
+model Post {
+  id             String     @id @default(uuid())
+  post_images    String[]
+  post_title     String
+  post_content   String?
+  post_author    User       @relation(fields: [post_author_id], references: [id])
+  post_author_id String
+  Comment        Comment[]
+  PostLike       PostLike[]
+}
+
+model PostLike {
+  liked_by      User   @relation(fields: [liked_by_id], references: [id])
+  liked_by_id   String
+  liked_post    Post   @relation(fields: [liked_post_id], references: [id])
+  liked_post_id String
+
+  @@unique([liked_by_id, liked_post_id])
+}
+
+model Comment {
+  id                String        @id @default(uuid())
+  comment_text      String
+  comment_author    User          @relation(fields: [comment_author_id], references: [id])
+  comment_author_id String
+  post              Post          @relation(fields: [post_id], references: [id])
+  post_id           String
+  CommentLike       CommentLike[]
+}
+
+model CommentLike {
+  liked_by         User    @relation(fields: [liked_by_id], references: [id])
+  liked_by_id      String
+  liked_comment    Comment @relation(fields: [liked_comment_id], references: [id])
+  liked_comment_id String
+
+  @@unique([liked_by_id, liked_comment_id])
+}
+
+model FollowRequests {
+  request_sender      User   @relation("request_sender", fields: [request_sender_id], references: [id])
+  request_sender_id   String
+  request_receiver    User   @relation("request_receiver", fields: [request_receiver_id], references: [id])
+  request_receiver_id String
+
+  @@unique([request_sender_id, request_receiver_id])
+}
