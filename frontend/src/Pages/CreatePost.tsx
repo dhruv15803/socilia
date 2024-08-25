@@ -10,7 +10,7 @@ const CreatePost = () => {
   const [postContent, setPostContent] = useState<string>("");
   const [postFiles, setPostFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { fileUrls, isLoading: isImagesLoading,setFileUrls} = useFileUrls(postFiles,setPostFiles,fileInputRef);
+  const { fileUrls, isLoading: isImagesLoading,setFileUrls} = useFileUrls(postFiles,setPostFiles,fileInputRef,"post_image_urls");
 
   const removeImage = (idx:number) => setFileUrls(fileUrls.filter((_,index) => index!==idx))
 

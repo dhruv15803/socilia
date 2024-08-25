@@ -4,9 +4,12 @@ import { SetStateAction, useEffect, useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 
 
-export const useFileUrls = (postFiles:FileList | null,setPostFiles:React.Dispatch<SetStateAction<FileList | null>>,fileInputRef:React.RefObject<HTMLInputElement>) => {
-    const post_image_urls = localStorage.getItem("post_image_urls")!==null ? JSON.parse(localStorage.getItem("post_image_urls")!) : [];
-    const [fileUrls,setFileUrls] = useState<string[]>(post_image_urls);
+export const useFileUrls = (postFiles:FileList | null,setPostFiles:React.Dispatch<SetStateAction<FileList | null>>,fileInputRef:React.RefObject<HTMLInputElement>,localStorageKey?:string) => {
+    let image_urls;
+    if(localStorageKey) {
+        image_urls=localStorage.getItem(localStorageKey)!==null ? JSON.parse(localStorage.getItem("post_image_urls")!) : [];
+    }
+    const [fileUrls,setFileUrls] = useState<string[]>(image_urls);
     const [isLoading,setIsLoading] = useState<boolean>(false);
     const {toast} = useToast();
 
