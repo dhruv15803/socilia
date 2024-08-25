@@ -44,6 +44,7 @@ const Navbar = () => {
         {loggedInUser !== null ? (
           <>
             <div className="flex items-center gap-8">
+              <Button onClick={() => navigate("/create")} variant="outline">Create post</Button>
               <div className="flex items-center gap-1">
                 {loggedInUser.user_image !== null ? (
                   <>

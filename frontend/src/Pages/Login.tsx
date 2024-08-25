@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import LoginByEmail from "@/components/LoginByEmail";
 import LoginByUsername from "@/components/LoginByUsername";
+import { AppContext } from "@/Context/AppContext";
+import { AppContextType } from "@/types";
+import { Navigate } from "react-router-dom";
 
 const Login = () => {
+  const {loggedInUser} = useContext(AppContext) as AppContextType;
+  if(loggedInUser) return <Navigate to="/"/>
   const [isLoginByEmail, setIsLoginByEmail] = useState<boolean>(true);
 
   return (

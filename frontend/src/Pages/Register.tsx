@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios"
 import { backendUrl } from "@/App";
 import { AppContext } from "@/Context/AppContext";
@@ -33,7 +33,10 @@ const registerFormSchema = z
 type registerFormType = z.infer<typeof registerFormSchema>;
 
 const Register = () => {
-  const {setLoggedInUser} = useContext(AppContext) as AppContextType;
+  const {loggedInUser,setLoggedInUser} = useContext(AppContext) as AppContextType;
+
+  if(loggedInUser) return <Navigate to="/"/>
+
   const {
     register,
     reset,

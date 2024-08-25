@@ -1,12 +1,12 @@
 import { Oval } from "react-loader-spinner";
 
 type Props = {
-    width:string;
-    height:string;
-    color:string;
-}
+  width: string;
+  height: string;
+  color: string;
+};
 
-const Loader = ({width,height,color}:Props) => {
+const Loader = ({ width, height, color }: Props) => {
   return (
     <>
       <Oval
