@@ -17,6 +17,7 @@ type LoginUserRequest = {
 
 
 const registerUser = async (req:Request,res:Response) =>  {
+    if(req.cookies?.auth_token) return res.status(400).json({"success":false,"message":"auth_token already exists"});
     try {
         const {email,username,password} = req.body as RegisterUserRequest;
         const user = await client.user.findFirst({where:{OR:[{email:email.trim().toLowerCase()},{username:username.trim().toLowerCase()}]}});
@@ -44,13 +45,14 @@ const registerUser = async (req:Request,res:Response) =>  {
 
 const loginUser = async (req:Request,res:Response) => {
     // user can login either by username or email
+    if(req.cookies?.auth_token) return res.status(400).json({"success":false,"message":"auth_token already exists"});
     try {
         const {email,password,username} = req.body as LoginUserRequest;
         let isLoginByEmail = true;
-        let incorrectCredMsg = isLoginByEmail ? "Incorrect email or password" : "Incorrect username or password";
         if(email.trim()==="") {
             isLoginByEmail = false;
         }
+        let incorrectCredMsg = isLoginByEmail ? "Incorrect email or password" : "Incorrect username or password";
         const user = isLoginByEmail ? await client.user.findUnique({where:{email:email.trim().toLowerCase()}}) : await client.user.findUnique({where:{username:username.trim().toLowerCase()}});
 
         if(!user) return res.status(400).json({"success":false,"message":incorrectCredMsg});
@@ -84,9 +86,21 @@ const logoutUser = async (req:Request,res:Response) => {
     }
 }
 
+const getAuthenticatedUser = async (req:Request,res:Response) => {
+    try {
+        const userId = req.userId;
+        const user = await client.user.findUnique({where:{id:userId}});
+        if(!user) return res.status(400).json({"success":false,"message":"invalid user id"});
+        return res.status(200).json({"success":true,user});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"sucess":false,"message":"Something went wrong when getting authenticated user"});
+    }
+}
 
 export {
     registerUser,
     loginUser,
     logoutUser,
+    getAuthenticatedUser,
 }

@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
+exports.getAuthenticatedUser = exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const __1 = require("..");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const registerUser = async (req, res) => {
+    if (req.cookies?.auth_token)
+        return res.status(400).json({ "success": false, "message": "auth_token already exists" });
     try {
         const { email, username, password } = req.body;
         const user = await __1.client.user.findFirst({ where: { OR: [{ email: email.trim().toLowerCase() }, { username: username.trim().toLowerCase() }] } });
@@ -33,13 +35,15 @@ const registerUser = async (req, res) => {
 exports.registerUser = registerUser;
 const loginUser = async (req, res) => {
     // user can login either by username or email
+    if (req.cookies?.auth_token)
+        return res.status(400).json({ "success": false, "message": "auth_token already exists" });
     try {
         const { email, password, username } = req.body;
         let isLoginByEmail = true;
-        let incorrectCredMsg = isLoginByEmail ? "Incorrect email or password" : "Incorrect username or password";
         if (email.trim() === "") {
             isLoginByEmail = false;
         }
+        let incorrectCredMsg = isLoginByEmail ? "Incorrect email or password" : "Incorrect username or password";
         const user = isLoginByEmail ? await __1.client.user.findUnique({ where: { email: email.trim().toLowerCase() } }) : await __1.client.user.findUnique({ where: { username: username.trim().toLowerCase() } });
         if (!user)
             return res.status(400).json({ "success": false, "message": incorrectCredMsg });
@@ -75,3 +79,17 @@ const logoutUser = async (req, res) => {
     }
 };
 exports.logoutUser = logoutUser;
+const getAuthenticatedUser = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const user = await __1.client.user.findUnique({ where: { id: userId } });
+        if (!user)
+            return res.status(400).json({ "success": false, "message": "invalid user id" });
+        return res.status(200).json({ "success": true, user });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "sucess": false, "message": "Something went wrong when getting authenticated user" });
+    }
+};
+exports.getAuthenticatedUser = getAuthenticatedUser;
