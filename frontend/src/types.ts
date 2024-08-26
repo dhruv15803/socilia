@@ -19,4 +19,25 @@ export type User = {
     updatedAt?:string;
 }
 
+export type Post = {
+    id:string;
+    post_images:string[];
+    post_title:string;
+    post_content:string;
+    post_author_id:string;
+    post_author:{
+        username:string;
+        user_image:string | null;
+        id:string;
+        email:string;
+    }
+    createdAt:string;
+    _count:{
+        PostLike:number;
+        Comment:number;
+    },
+    PostLike:{
+        liked_by_id:string;
+    }[];
+}
 

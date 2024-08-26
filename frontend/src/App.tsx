@@ -4,6 +4,7 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import AppContextProvider from "./Context/AppContext";
 import CreatePost from "./Pages/CreatePost";
+import Home from "./Pages/Home";
 export const backendUrl = "http://localhost:5000";
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Layout />}>
-              <Route path="/" element={<>Home</>} />
+              <Route path="/" element={<Home/>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/create" element={<CreatePost/>}/>

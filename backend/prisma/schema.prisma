@@ -46,6 +46,7 @@ model Post {
   post_author_id String
   Comment        Comment[]
   PostLike       PostLike[]
+  createdAt      DateTime   @default(now())
 }
 
 model PostLike {
