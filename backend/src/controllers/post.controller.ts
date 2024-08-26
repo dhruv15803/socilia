@@ -46,6 +46,7 @@ const fetchPosts = async (req:Request,res:Response) => {
                     }
                 }
             },
+            orderBy:{createdAt:"desc"},
             skip:skip,
             take:limit,
         });
@@ -87,9 +88,36 @@ const likePost = async (req:Request,res:Response) => {
     }
 }
 
+const fetchPost = async (req:Request,res:Response) => {
+    try {
+        const {postId} = req.params;
+        const post = await client.post.findUnique({where:{id:postId},include:{
+            _count:{select:{PostLike:true,Comment:true}},
+            post_author:{
+                select:{
+                    username:true,
+                    user_image:true,
+                    id:true,
+                    email:true,
+                }
+            },
+            PostLike:{
+                select:{
+                    liked_by_id:true,
+                }
+            }
+        }});
+        if(!post) return res.status(400).json({"success":false,"message":"Invalid post id"});
+        return res.status(200).json({"success":true,post});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"Something went wrong when fetching post"});
+    }
+}
 
 export {
     createPost,
     fetchPosts,
     likePost,
+    fetchPost,
 }

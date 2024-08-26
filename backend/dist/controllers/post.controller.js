@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likePost = exports.fetchPosts = exports.createPost = void 0;
+exports.fetchPost = exports.likePost = exports.fetchPosts = exports.createPost = void 0;
 const __1 = require("..");
 const createPost = async (req, res) => {
     try {
@@ -41,6 +41,7 @@ const fetchPosts = async (req, res) => {
                     }
                 }
             },
+            orderBy: { createdAt: "desc" },
             skip: skip,
             take: limit,
         });
@@ -85,3 +86,32 @@ const likePost = async (req, res) => {
     }
 };
 exports.likePost = likePost;
+const fetchPost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await __1.client.post.findUnique({ where: { id: postId }, include: {
+                _count: { select: { PostLike: true, Comment: true } },
+                post_author: {
+                    select: {
+                        username: true,
+                        user_image: true,
+                        id: true,
+                        email: true,
+                    }
+                },
+                PostLike: {
+                    select: {
+                        liked_by_id: true,
+                    }
+                }
+            } });
+        if (!post)
+            return res.status(400).json({ "success": false, "message": "Invalid post id" });
+        return res.status(200).json({ "success": true, post });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when fetching post" });
+    }
+};
+exports.fetchPost = fetchPost;

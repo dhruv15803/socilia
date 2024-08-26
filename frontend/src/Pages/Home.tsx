@@ -20,9 +20,9 @@ const Home = () => {
 
   return (
     <>
-    <div className='flex mt-12 flex-col gap-4 mx-8 md:mx-[20%] lg:mx-[25%] xl:mx-[30%]'>
+    <div className='flex mt-12 flex-col gap-4 mx-8 md:mx-[20%] lg:mx-[25%] xl:mx-[35%]'>
         {posts.map((post) => {
-            return <PostCard post={post}/>
+            return <PostCard key={post.id} post={post}/>
         })}
     </div>
     </>

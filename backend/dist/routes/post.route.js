@@ -10,4 +10,5 @@ const router = express_1.default.Router();
 router.post("/create", auth_middleware_1.authenticatedUser, post_controller_1.createPost);
 router.get("/posts", post_controller_1.fetchPosts);
 router.post("/like", auth_middleware_1.authenticatedUser, post_controller_1.likePost);
+router.get("/:postId", auth_middleware_1.authenticatedUser, post_controller_1.fetchPost);
 exports.default = router;
