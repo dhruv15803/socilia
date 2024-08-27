@@ -13,6 +13,7 @@ exports.client = new client_1.PrismaClient();
 const auth_route_1 = __importDefault(require("./routes/auth.route"));
 const post_route_1 = __importDefault(require("./routes/post.route"));
 const file_route_1 = __importDefault(require("./routes/file.route"));
+const user_route_1 = __importDefault(require("./routes/user.route"));
 const port = process.env.PORT;
 const app = (0, express_1.default)();
 //  middlewares
@@ -28,6 +29,7 @@ app.get("/test", (req, res) => {
 app.use("/api/auth", auth_route_1.default);
 app.use("/api/post", post_route_1.default);
 app.use("/api/file", file_route_1.default);
+app.use("/api/user", user_route_1.default);
 app.listen(port, () => {
     console.log(`server running at http://localhost:${port}`);
 });

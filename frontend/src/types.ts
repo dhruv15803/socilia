@@ -37,7 +37,20 @@ export type Post = {
         Comment:number;
     },
     PostLike:{
-        liked_by_id:string;
+        liked_by:{
+            id:string;
+            username:string;
+            user_image:string | null;
+            email:string;
+        }
     }[];
 }
 
+export type Following = {
+    following:{
+        id:string;
+        username:string;
+        email:string;
+        user_image:string | null;
+    }
+}

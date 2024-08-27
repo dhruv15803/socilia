@@ -4,7 +4,7 @@ import { postCreatedAt } from "@/utils";
 import { useContext, useEffect, useState } from "react";
 import { RxAvatar } from "react-icons/rx";
 import { useParams } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight} from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import { AiFillLike } from "react-icons/ai";
@@ -13,17 +13,17 @@ import { AppContextType } from "@/types";
 import { backendUrl } from "@/App";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import PostLikesDialogBox from "@/components/PostLikesDialogBox";
 
 const PostDetail = () => {
-  const {toast} = useToast();
-  const {loggedInUser} = useContext(AppContext) as AppContextType;
+  const { toast } = useToast();
+  const { loggedInUser } = useContext(AppContext) as AppContextType;
   const { postId } = useParams();
   if (!postId) return <>post not available</>;
   const { isLoading, post } = usePost(postId);
   const [currentImageIdx, setCurrentImageIdx] = useState<number>(0);
-  const [isPostLiked,setIsPostLiked] = useState<boolean>(false);
-  const [postLikesCount,setPostLikesCount] = useState<number>(0);
-
+  const [isPostLiked, setIsPostLiked] = useState<boolean>(false);
+  const [postLikesCount, setPostLikesCount] = useState<number>(0);
 
   const likePost = async () => {
     try {
@@ -49,14 +49,14 @@ const PostDetail = () => {
     }
   };
 
-
   useEffect(() => {
-    if(post==null) return;
-    const isLiked = post?.PostLike.some((liked_by) => liked_by.liked_by_id===loggedInUser?.id);
+    if (post == null) return;
+    const isLiked = post?.PostLike.some(
+      (liked_by) => liked_by.liked_by.id === loggedInUser?.id
+    );
     setIsPostLiked(isLiked);
     setPostLikesCount(post._count.PostLike);
-  },[post])
-
+  }, [post]);
 
   if (isLoading) {
     return (
@@ -91,7 +91,9 @@ const PostDetail = () => {
             {postCreatedAt(post?.createdAt!)}
           </div>
         </div>
-        <div className="text-xl flex flex-wrap font-semibold">{post?.post_title}</div>
+        <div className="text-xl flex flex-wrap font-semibold">
+          {post?.post_title}
+        </div>
         <div className="flex items-center justify-center gap-2 px-8">
           {currentImageIdx > 0 && (
             <button
@@ -103,30 +105,50 @@ const PostDetail = () => {
           )}
           {post?.post_images.length !== 0 && (
             <>
-              <img className="rounded-lg w-full aspect-auto" src={post?.post_images[currentImageIdx]} alt="" />
+              <img
+                className="rounded-lg w-full aspect-auto"
+                src={post?.post_images[currentImageIdx]}
+                alt=""
+              />
             </>
           )}
           {currentImageIdx < post?.post_images.length! - 1 && (
-            <button className="text-2xl" onClick={() => setCurrentImageIdx((prev) => prev + 1)}>
+            <button
+              className="text-2xl"
+              onClick={() => setCurrentImageIdx((prev) => prev + 1)}
+            >
               <FaChevronRight />
             </button>
           )}
         </div>
-        {post?.post_images.length! > 1 && <div className="flex items-center gap-1 justify-center">
-            {post?.post_images.map((_,idx) => {
-                return <div className={`rounded-full p-1 border border-black ${currentImageIdx===idx ? 'bg-black' : ''}`} key={idx}></div>
+        {post?.post_images.length! > 1 && (
+          <div className="flex items-center gap-1 justify-center">
+            {post?.post_images.map((_, idx) => {
+              return (
+                <div
+                  className={`rounded-full p-1 border border-black ${
+                    currentImageIdx === idx ? "bg-black" : ""
+                  }`}
+                  key={idx}
+                ></div>
+              );
             })}
-        </div>}
+          </div>
+        )}
         <div className="flex flex-wrap text-lg">{post?.post_content}</div>
         <div className="flex items-center p-2 border-t gap-4">
-            <div className="flex items-center gap-2">
-                <button className="text-2xl"><FaRegCommentAlt/></button>
-                <span>{post?._count.Comment}</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <button onClick={likePost} className="text-2xl">{isPostLiked ? <AiFillLike/> : <AiOutlineLike/>}</button>
-                <span>{postLikesCount}</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <button className="text-2xl">
+              <FaRegCommentAlt />
+            </button>
+            <span>{post?._count.Comment}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={likePost} className="text-2xl">
+              {isPostLiked ? <AiFillLike /> : <AiOutlineLike />}
+            </button>
+            {post!==null && <PostLikesDialogBox post={post} postLikesCount={postLikesCount}/>}
+          </div>
         </div>
       </div>
     </>

@@ -37,7 +37,14 @@ const fetchPosts = async (req, res) => {
                 },
                 PostLike: {
                     select: {
-                        liked_by_id: true,
+                        liked_by: {
+                            select: {
+                                id: true,
+                                username: true,
+                                user_image: true,
+                                email: true,
+                            }
+                        }
                     }
                 }
             },
@@ -101,7 +108,14 @@ const fetchPost = async (req, res) => {
                 },
                 PostLike: {
                     select: {
-                        liked_by_id: true,
+                        liked_by: {
+                            select: {
+                                id: true,
+                                username: true,
+                                user_image: true,
+                                email: true,
+                            }
+                        }
                     }
                 }
             } });

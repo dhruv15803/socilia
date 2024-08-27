@@ -20,7 +20,7 @@ const PostCard = ({ post }: Props) => {
   const { loggedInUser } = useContext(AppContext) as AppContextType;
   const isLiked = useMemo(() => {
     return post.PostLike.some(
-      (liked_by) => liked_by.liked_by_id === loggedInUser?.id
+      (liked_by) => liked_by.liked_by.id === loggedInUser?.id
     );
   }, [post, loggedInUser]);
   const { toast } = useToast();
@@ -94,7 +94,7 @@ const PostCard = ({ post }: Props) => {
               : post.post_content}
           </div>
         </div>
-        <div className="flex items-center gap-4 border-t p-2 p-4 ">
+        <div className="flex items-center gap-4 border-t p-4 ">
           <div className="flex items-center gap-2">
             <button className="text-2xl">
               <FaRegCommentAlt />

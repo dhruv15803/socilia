@@ -5,9 +5,6 @@ import { usePosts } from '@/hooks/usePosts'
 const Home = () => {
     const {posts,isLoading,noOfPages} = usePosts();
 
-    console.log(noOfPages);
-
-
     if(isLoading) return (
         <>
         <div className='flex justify-center my-24 items-center'>
