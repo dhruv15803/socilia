@@ -71,7 +71,7 @@ const PostDetail = () => {
 
   return (
     <>
-      <div className="my-16 border flex flex-col gap-4 mx-10 md:mx-[20%] p-4 lg:mx-[25%] xl:mx-[30%]">
+      <div className="my-16 border rounded-lg flex flex-col gap-4 mx-10 md:mx-[20%] p-4 lg:mx-[25%] xl:mx-[30%]">
         <div className="flex items-center justify-between border-b p-2">
           <div className="flex items-center gap-2">
             {post?.post_author.user_image !== null ? (
@@ -85,7 +85,8 @@ const PostDetail = () => {
                 </button>
               </>
             )}
-            <span className="text-xl">{post?.post_author.username}</span>
+            
+            <span className="text-lg">{post?.post_author.username}</span>
           </div>
           <div className="text-xl text-gray-600">
             {postCreatedAt(post?.createdAt!)}

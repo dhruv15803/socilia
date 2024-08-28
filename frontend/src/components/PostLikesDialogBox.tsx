@@ -24,7 +24,7 @@ const PostLikesDialogBox = ({ post, postLikesCount }: Props) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <span className="cursor-pointer">{postLikesCount}</span>
+          <span className="cursor-pointer text-xl text-gray-600 hover:text-black hover:duration-300">{postLikesCount}</span>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

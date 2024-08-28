@@ -57,11 +57,11 @@ const UserLikePost = ({ liked_by,following}: Props) => {
         <div className="flex items-center gap-2">
           {liked_by.liked_by.user_image !== null ? (
             <>
-              <img src={liked_by.liked_by.user_image} alt="" />
+              <img className="w-12 rounded-full" src={liked_by.liked_by.user_image} alt="" />
             </>
           ) : (
             <>
-              <button className="text-xl">
+              <button className="text-3xl">
                 <RxAvatar />
               </button>
             </>

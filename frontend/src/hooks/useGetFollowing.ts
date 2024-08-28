@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 export const useGetFollowing = () => {
     const [following,setFollowing] = useState<Following[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(false);
+    const [followingCount,setFollowingCount] = useState<number>(0);
 
     useEffect(() => {
         const fetchFollowing = async () => {
@@ -16,6 +17,7 @@ export const useGetFollowing = () => {
                     withCredentials:true,
                 });
                 setFollowing(response.data.following);
+                setFollowingCount(response.data.following_count);
             } catch (error) {
                 console.log(error);
             } finally {
@@ -25,6 +27,6 @@ export const useGetFollowing = () => {
         fetchFollowing();
     },[])
 
-    return {following,isLoading};
+    return {following,isLoading,followingCount,setFollowing,setFollowingCount};
 
 }

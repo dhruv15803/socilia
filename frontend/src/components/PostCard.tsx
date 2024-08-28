@@ -60,7 +60,7 @@ const PostCard = ({ post }: Props) => {
           <div className="flex items-center gap-2">
             {post.post_author.user_image !== null ? (
               <>
-                <img src={post.post_author.user_image} alt="" />
+                <img className="w-12 rounded-full" src={post.post_author.user_image} alt="" />
               </>
             ) : (
               <>

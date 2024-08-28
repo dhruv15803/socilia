@@ -54,3 +54,12 @@ export type Following = {
         user_image:string | null;
     }
 }
+
+export type Follower = {
+    follower:{
+        id:string;
+        username:string;
+        email:string;
+        user_image:string | null;
+    }
+}

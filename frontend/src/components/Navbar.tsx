@@ -36,7 +36,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between p-2 border-b md:px-10">
+      <div className="flex items-center p-2 justify-between border-b md:px-10">
         <Link to="/">
           {" "}
           <div className="text-2xl font-semibold">Socilia</div>
@@ -45,7 +45,7 @@ const Navbar = () => {
           <>
             <div className="flex items-center gap-8">
               <Button onClick={() => navigate("/create")} variant="outline">Create post</Button>
-              <div className="flex items-center gap-1">
+              <div onClick={() => navigate("/profile")} className="flex items-center border border-white gap-1 px-4 py-2 cursor-pointer hover:border hover:border-black hover:rounded-lg hover:px-4 hover:py-2 hover:duration-300">
                 {loggedInUser.user_image !== null ? (
                   <>
                     <img
@@ -56,10 +56,10 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    <button className="text-4xl"><RxAvatar/></button>
+                    <button className="text-4xl text-gray-600 hover:text-black hover:duration-300"><RxAvatar/></button>
                   </>
                 )}
-                <span className="text-xl font-semibold">
+                <span className="text-xl text-gray-600 font-semibold hover:text-black hover:duration-300">
                   {loggedInUser.username}
                 </span>
               </div>

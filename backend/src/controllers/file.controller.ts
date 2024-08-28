@@ -37,6 +37,26 @@ const uploadFiles = async (req:Request,res:Response) => {
     }
 }
 
+const uploadFile = async (req:Request,res:Response) => {
+    try {
+        if(!req.file?.path) return res.status(400).json({"success":false,"message":"file not available"});
+        const localFilePath = req.file.path;
+        const cloudinaryResponse = await cloudinary.uploader.upload(localFilePath,{
+            "resource_type":"auto",
+        });
+    
+        const url = cloudinaryResponse.url;
+        await fs.unlink(localFilePath);
+        return res.status(200).json({"success":true,url});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"Something went wrong when uploading file"});
+    }
+
+}
+
+
 export {
     uploadFiles,
+    uploadFile,
 }

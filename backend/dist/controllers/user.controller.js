@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
+exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
 const __1 = require("..");
 const fetchUsers = async (req, res) => {
     try {
@@ -36,7 +36,7 @@ const followUser = async (req, res) => {
             responseMsg = `followed ${following.username}`;
             follow = true;
         }
-        return res.status(200).json({ "success": true, "message": responseMsg, "isFollow": follow });
+        return res.status(200).json({ "success": true, "message": responseMsg, "isFollow": follow, following });
     }
     catch (error) {
         console.log(error);
@@ -102,3 +102,19 @@ const fetchFollowing = async (req, res) => {
     }
 };
 exports.fetchFollowing = fetchFollowing;
+const editProfile = async (req, res) => {
+    try {
+        const { firstName, lastName, bioData, imgUrl } = req.body;
+        const userId = req.userId;
+        const user = await __1.client.user.findUnique({ where: { id: userId } });
+        if (!user)
+            return res.status(400).json({ "success": false, "message": "invalid userid" });
+        const newUser = await __1.client.user.update({ where: { id: user.id }, data: { user_image: imgUrl, firstName: firstName.trim(), lastName: lastName.trim(), bio_data: bioData.trim() } });
+        return res.status(200).json({ "success": true, newUser });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when editing profile" });
+    }
+};
+exports.editProfile = editProfile;
