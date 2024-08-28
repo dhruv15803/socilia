@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchPost = exports.likePost = exports.fetchPosts = exports.createPost = void 0;
+exports.fetchMyPosts = exports.fetchPost = exports.likePost = exports.fetchPosts = exports.createPost = void 0;
 const __1 = require("..");
 const createPost = async (req, res) => {
     try {
@@ -129,3 +129,48 @@ const fetchPost = async (req, res) => {
     }
 };
 exports.fetchPost = fetchPost;
+const fetchMyPosts = async (req, res) => {
+    try {
+        const query = req.query;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = page * limit - limit;
+        const userId = req.userId;
+        const user = await __1.client.user.findUnique({ where: { id: userId } });
+        if (!user)
+            return res.status(400).json({ "success": false, "message": "user invalid id" });
+        const posts = await __1.client.post.findMany({ where: { post_author_id: user.id }, include: {
+                _count: { select: { PostLike: true, Comment: true } },
+                post_author: {
+                    select: {
+                        username: true,
+                        user_image: true,
+                        id: true,
+                        email: true,
+                    }
+                },
+                PostLike: {
+                    select: {
+                        liked_by: {
+                            select: {
+                                id: true,
+                                username: true,
+                                user_image: true,
+                                email: true,
+                            }
+                        }
+                    }
+                }
+            },
+            skip: skip,
+            take: limit,
+        });
+        const total = await __1.client.post.count({ where: { post_author_id: user.id } });
+        return res.status(200).json({ "success": true, posts, "noOfPages": Math.ceil(total / limit) });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when fetching posts" });
+    }
+};
+exports.fetchMyPosts = fetchMyPosts;

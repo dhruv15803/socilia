@@ -8,6 +8,8 @@ import Home from "./Pages/Home";
 import ProtectedRoute from "./Layouts/ProtectedRoute";
 import PostDetail from "./Pages/PostDetail";
 import Profile from "./Pages/Profile";
+import ProfileLayout from "./Layouts/ProfileLayout";
+import MyPosts from "./Pages/MyPosts";
 export const backendUrl = "http://localhost:5000";
 
 function App() {
@@ -23,7 +25,11 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="/create" element={<CreatePost />} />
                 <Route path="/post/:postId" element={<PostDetail/>}/>
-                <Route path="/profile" element={<Profile/>}/>
+                <Route path="/profile" element={<ProfileLayout/>}>
+                  <Route index element={<MyPosts/>}/>
+                  <Route path="liked_posts" element={<>liked posts</>}/>
+                  <Route/>
+                </Route>
               </Route>
             </Route>
           </Routes>

@@ -129,9 +129,54 @@ const fetchPost = async (req:Request,res:Response) => {
     }
 }
 
+const fetchMyPosts = async (req:Request,res:Response) => {
+    try {
+        const query = req.query;
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = page * limit - limit;
+        const userId = req.userId;
+        const user = await client.user.findUnique({where:{id:userId}});
+        if(!user) return res.status(400).json({"success":false,"message":"user invalid id"});
+        const posts = await client.post.findMany({where:{post_author_id:user.id},include:{
+            _count:{select:{PostLike:true,Comment:true}},
+            post_author:{
+                select:{
+                    username:true,
+                    user_image:true,
+                    id:true,
+                    email:true,
+                }
+            },
+            PostLike:{
+                select:{
+                    liked_by:{
+                        select:{
+                            id:true,
+                            username:true,
+                            user_image:true,
+                            email:true,
+                        }
+                    }
+                }
+            }
+        },
+        skip:skip,
+        take:limit,
+    });
+    const total = await client.post.count({where:{post_author_id:user.id}});
+    return res.status(200).json({"success":true,posts,"noOfPages":Math.ceil(total/limit)});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"Something went wrong when fetching posts"});
+    }
+}
+
+
 export {
     createPost,
     fetchPosts,
     likePost,
     fetchPost,
+    fetchMyPosts,
 }

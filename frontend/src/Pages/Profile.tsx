@@ -1,6 +1,6 @@
 import { AppContext } from "@/Context/AppContext";
 import { AppContextType, Follower, Following } from "@/types";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import blankAvatarImg from "../assets/blankAvatarImg.png";
 import { useGetFollowers } from "@/hooks/useGetFollowers";
 import { useGetFollowing } from "@/hooks/useGetFollowing";
@@ -67,7 +67,6 @@ const Profile = () => {
 
   return (
     <>
-      <div className="my-8 flex flex-col mx-10 md:mx-[20%] lg:mx-[25%] xl:mx-[30%]">
         <div className="flex flex-col border rounded-lg p-4 gap-2">
           <div className="flex justify-between">
             <img
@@ -107,7 +106,7 @@ const Profile = () => {
                     <>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <button>{followersCount}</button>
+                          <button className="text-gray-600 hover:text-black hover:duration-300">{followersCount}</button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
@@ -149,7 +148,7 @@ const Profile = () => {
                     <>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <button>{followingCount}</button>
+                          <button className="text-gray-600 hover:text-black hover:duration-300">{followingCount}</button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
@@ -183,7 +182,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 };
