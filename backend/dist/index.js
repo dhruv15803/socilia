@@ -14,6 +14,7 @@ const auth_route_1 = __importDefault(require("./routes/auth.route"));
 const post_route_1 = __importDefault(require("./routes/post.route"));
 const file_route_1 = __importDefault(require("./routes/file.route"));
 const user_route_1 = __importDefault(require("./routes/user.route"));
+const comment_route_1 = __importDefault(require("./routes/comment.route"));
 const port = process.env.PORT;
 const app = (0, express_1.default)();
 //  middlewares
@@ -30,6 +31,7 @@ app.use("/api/auth", auth_route_1.default);
 app.use("/api/post", post_route_1.default);
 app.use("/api/file", file_route_1.default);
 app.use("/api/user", user_route_1.default);
+app.use("/api/comment", comment_route_1.default);
 app.listen(port, () => {
     console.log(`server running at http://localhost:${port}`);
 });

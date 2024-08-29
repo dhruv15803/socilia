@@ -11,5 +11,7 @@ router.post("/create", auth_middleware_1.authenticatedUser, post_controller_1.cr
 router.get("/posts", post_controller_1.fetchPosts);
 router.post("/like", auth_middleware_1.authenticatedUser, post_controller_1.likePost);
 router.get("/my_posts", auth_middleware_1.authenticatedUser, post_controller_1.fetchMyPosts);
+router.get("/liked_posts", auth_middleware_1.authenticatedUser, post_controller_1.fetchLikedPosts);
+router.delete("/delete/:postId", auth_middleware_1.authenticatedUser, post_controller_1.removePost);
 router.get("/:postId", auth_middleware_1.authenticatedUser, post_controller_1.fetchPost);
 exports.default = router;

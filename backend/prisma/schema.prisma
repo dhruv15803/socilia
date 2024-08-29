@@ -52,7 +52,7 @@ model Post {
 model PostLike {
   liked_by      User   @relation(fields: [liked_by_id], references: [id])
   liked_by_id   String
-  liked_post    Post   @relation(fields: [liked_post_id], references: [id])
+  liked_post    Post   @relation(fields: [liked_post_id], references: [id], onDelete: Cascade)
   liked_post_id String
 
   @@unique([liked_by_id, liked_post_id])
@@ -63,15 +63,16 @@ model Comment {
   comment_text      String
   comment_author    User          @relation(fields: [comment_author_id], references: [id])
   comment_author_id String
-  post              Post          @relation(fields: [post_id], references: [id])
+  post              Post          @relation(fields: [post_id], references: [id], onDelete: Cascade)
   post_id           String
   CommentLike       CommentLike[]
+  createdAt         DateTime      @default(now())
 }
 
 model CommentLike {
   liked_by         User    @relation(fields: [liked_by_id], references: [id])
   liked_by_id      String
-  liked_comment    Comment @relation(fields: [liked_comment_id], references: [id])
+  liked_comment    Comment @relation(fields: [liked_comment_id], references: [id], onDelete: Cascade)
   liked_comment_id String
 
   @@unique([liked_by_id, liked_comment_id])

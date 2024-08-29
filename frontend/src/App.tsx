@@ -10,6 +10,7 @@ import PostDetail from "./Pages/PostDetail";
 import Profile from "./Pages/Profile";
 import ProfileLayout from "./Layouts/ProfileLayout";
 import MyPosts from "./Pages/MyPosts";
+import LikedPosts from "./Pages/LikedPosts";
 export const backendUrl = "http://localhost:5000";
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
                 <Route path="/post/:postId" element={<PostDetail/>}/>
                 <Route path="/profile" element={<ProfileLayout/>}>
                   <Route index element={<MyPosts/>}/>
-                  <Route path="liked_posts" element={<>liked posts</>}/>
+                  <Route path="liked_posts" element={<LikedPosts/>}/>
                   <Route/>
                 </Route>
               </Route>

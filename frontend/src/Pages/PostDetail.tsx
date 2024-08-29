@@ -14,6 +14,7 @@ import { backendUrl } from "@/App";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import PostLikesDialogBox from "@/components/PostLikesDialogBox";
+import PostCommentsDialog from "@/components/PostCommentsDialog";
 
 const PostDetail = () => {
   const { toast } = useToast();
@@ -24,6 +25,7 @@ const PostDetail = () => {
   const [currentImageIdx, setCurrentImageIdx] = useState<number>(0);
   const [isPostLiked, setIsPostLiked] = useState<boolean>(false);
   const [postLikesCount, setPostLikesCount] = useState<number>(0);
+  const [commentCount,setCommentCount] = useState<number>(0);
 
   const likePost = async () => {
     try {
@@ -49,6 +51,9 @@ const PostDetail = () => {
     }
   };
 
+  const handleCommentChange = (isDelete:boolean) => isDelete ? setCommentCount((prevCount) => prevCount-1) : setCommentCount((prevCount) => prevCount+1);
+
+
   useEffect(() => {
     if (post == null) return;
     const isLiked = post?.PostLike.some(
@@ -56,6 +61,7 @@ const PostDetail = () => {
     );
     setIsPostLiked(isLiked);
     setPostLikesCount(post._count.PostLike);
+    setCommentCount(post._count.Comment);
   }, [post]);
 
   if (isLoading) {
@@ -76,7 +82,7 @@ const PostDetail = () => {
           <div className="flex items-center gap-2">
             {post?.post_author.user_image !== null ? (
               <>
-                <img src={post?.post_author.user_image} alt="" />
+                <img className="rounded-full w-12 aspect-auto" src={post?.post_author.user_image} alt="" />
               </>
             ) : (
               <>
@@ -139,10 +145,7 @@ const PostDetail = () => {
         <div className="flex flex-wrap text-lg">{post?.post_content}</div>
         <div className="flex items-center p-2 border-t gap-4">
           <div className="flex items-center gap-2">
-            <button className="text-2xl">
-              <FaRegCommentAlt />
-            </button>
-            <span>{post?._count.Comment}</span>
+            {post && <PostCommentsDialog onCommentChange={handleCommentChange} postId={post?.id!} commentCount={commentCount}/>}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={likePost} className="text-2xl">

@@ -10,12 +10,15 @@ import { backendUrl } from "@/App";
 import { useToast } from "./ui/use-toast";
 import { AppContext } from "@/Context/AppContext";
 import { useNavigate } from "react-router-dom";
+import { BsThreeDots } from "react-icons/bs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 type Props = {
   post: Post;
+  onRemovePost:(postId:string) => void;
 };
 
-const PostCard = ({ post }: Props) => {
+const PostCard = ({ post,onRemovePost}: Props) => {
   const navigate = useNavigate();
   const { loggedInUser } = useContext(AppContext) as AppContextType;
   const isLiked = useMemo(() => {
@@ -28,6 +31,7 @@ const PostCard = ({ post }: Props) => {
   const [postLikesCount, setPostLikesCount] = useState<number>(
     post._count.PostLike
   );
+  const [isRemovingPost,setIsRemovingPost] = useState<boolean>(false);
 
   const likePost = async () => {
     try {
@@ -53,14 +57,35 @@ const PostCard = ({ post }: Props) => {
     }
   };
 
+  const removePost = async () => {
+    try {
+      setIsRemovingPost(true);
+      const response = await axios.delete(`${backendUrl}/api/post/delete/${post.id}`,{
+        withCredentials:true,
+      });
+      console.log(response);
+      onRemovePost(post.id);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsRemovingPost(false);
+    }
+  }
+
+
+
   return (
     <>
-      <div className="border rounded-lg flex flex-col">
+      <div className={`border rounded-lg flex flex-col ${isRemovingPost ? "opacity-50" : ""}`}>
         <div className="flex items-center p-4 justify-between border-b">
           <div className="flex items-center gap-2">
             {post.post_author.user_image !== null ? (
               <>
-                <img className="w-12 rounded-full" src={post.post_author.user_image} alt="" />
+                <img
+                  className="w-12 rounded-full"
+                  src={post.post_author.user_image}
+                  alt=""
+                />
               </>
             ) : (
               <>
@@ -71,11 +96,25 @@ const PostCard = ({ post }: Props) => {
             )}
             <span className="text-xl">{post.post_author.username}</span>
           </div>
-          <div className="text-xl text-gray-600">
-            {postCreatedAt(post.createdAt)}
+          <div className="text-xl text-gray-600 flex flex-col gap-2">
+            <div className="flex items-center justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild><button><BsThreeDots /></button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>post options</DropdownMenuLabel>
+                  <DropdownMenuSeparator/>
+                  {loggedInUser?.id===post.post_author_id && <DropdownMenuItem disabled={isRemovingPost} onClick={removePost}>remove post</DropdownMenuItem>}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <span>{postCreatedAt(post.createdAt)}</span>
           </div>
         </div>
-        <div onClick={() => navigate(`/post/${post.id}`)} className="hover:bg-gray-100 hover:duration-300 flex flex-col gap-2">
+        <div
+          onClick={() => navigate(`/post/${post.id}`)}
+          className="hover:bg-gray-100 hover:duration-300 flex flex-col gap-2"
+        >
           <div className="flex flex-wrap text-xl font-semibold p-4">
             {post.post_title}
           </div>

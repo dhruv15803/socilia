@@ -37,7 +37,7 @@ const PostLikesDialogBox = ({ post, postLikesCount }: Props) => {
             </div>
           </> : <>
           {post?.PostLike.map((liked_by) => {
-            return <UserLikePost following={following} liked_by={liked_by} />;
+            return <UserLikePost key={liked_by.liked_by.id} following={following} liked_by={liked_by} />;
           })}
           </>}
         </DialogContent>

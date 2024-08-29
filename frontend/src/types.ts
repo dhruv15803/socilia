@@ -44,6 +44,7 @@ export type Post = {
             email:string;
         }
     }[];
+
 }
 
 export type Following = {
@@ -62,4 +63,29 @@ export type Follower = {
         email:string;
         user_image:string | null;
     }
+}
+
+export type Comment = {
+    id:string;
+    comment_text:string;
+    comment_author_id:string;
+    post_id:string;
+    _count:{
+        CommentLike:number;
+    },
+    comment_author:{
+        id:string;
+        username:string;
+        email:string;
+        user_image:string | null;
+    },
+    CommentLike:{
+        liked_by:{
+            id:string;
+            username:string;
+            email:string;
+            user_image:string | null;
+        }
+    },
+    createdAt:string;
 }

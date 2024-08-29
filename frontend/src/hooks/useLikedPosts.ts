@@ -3,23 +3,23 @@ import { Post } from "@/types"
 import axios from "axios";
 import { useEffect, useState } from "react"
 
-
-export const usePosts = (page=1,limit=10) => {
-    const [posts,setPosts] = useState<Post[]>([]);
+export const useLikedPosts = (page=1,limit=10) => {
+    const [likedPosts,setLikedPosts] = useState<Post[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(false);
-    const [noOfPages,setNoOfPages] = useState<number>(0);
+    const [noOfPages,setNoOfPages] = useState<number>(1);
 
     const params = new URLSearchParams();
     params.set("page",page.toString());
     params.set("limit",limit.toString());
 
     useEffect(() => {
-        const fetchPosts = async () => {
+        const fetchLikedPosts = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${backendUrl}/api/post/posts?${params.toString()}`);
-                console.log(response);
-                setPosts(response.data.posts);
+                const response = await axios.get(`${backendUrl}/api/post/liked_posts?${params.toString()}`,{
+                    withCredentials:true,
+                });
+                setLikedPosts(response.data.liked_posts);
                 setNoOfPages(response.data.noOfPages);
             } catch (error) {
                 console.log(error);
@@ -27,8 +27,8 @@ export const usePosts = (page=1,limit=10) => {
                 setIsLoading(false);
             }
         }
-        fetchPosts();
+        fetchLikedPosts();
     },[page,limit])
 
-    return {posts,isLoading,noOfPages,setPosts};
+    return {likedPosts,isLoading,setLikedPosts,noOfPages}
 }

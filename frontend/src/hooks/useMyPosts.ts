@@ -8,7 +8,8 @@ import { useEffect, useState } from "react"
 export const useMyPosts = (page=1,limit=10) => {
     const [posts,setPosts] = useState<Post[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(false);
-    
+    const [noOfPages,setNoOfPages] = useState<number>(1);
+
     
     const params = new URLSearchParams();
     params.set("page",page.toString());
@@ -22,6 +23,7 @@ export const useMyPosts = (page=1,limit=10) => {
                     withCredentials:true,
                 });
                 setPosts(response.data.posts);
+                setNoOfPages(response.data.noOfPages);
             } catch (error) {
                 console.log(error);
             } finally {
@@ -31,6 +33,6 @@ export const useMyPosts = (page=1,limit=10) => {
         fetchMyPosts();
     },[page,limit]);
 
-    return {posts,isLoading,setPosts};
+    return {posts,isLoading,setPosts,noOfPages};
 
 }
