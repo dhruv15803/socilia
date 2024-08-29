@@ -107,7 +107,7 @@ const PostCommentsDialog = ({
               type="text"
             />
             <div className="flex items-center justify-end">
-              <Button>comment</Button>
+              <Button disabled={commentText.length==0}>comment</Button>
             </div>
           </form>
           {comments.map((comment) => {

@@ -1,11 +1,13 @@
 import { AppContext } from "@/Context/AppContext";
 import { AppContextType, Comment } from "@/types";
 import { postCreatedAt } from "@/utils";
-import { useContext } from "react";
-import { AiOutlineLike } from "react-icons/ai";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 import { RxAvatar } from "react-icons/rx";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import axios from "axios";
+import { backendUrl } from "@/App";
 
 type Props = {
   comment: Comment;
@@ -13,8 +15,26 @@ type Props = {
 };
 
 const CommentCard = ({ comment,onRemoveComment}: Props) => {
-
     const {loggedInUser} = useContext(AppContext) as AppContextType;
+    const liked = useMemo(() => comment.CommentLike.some((liked_by) => liked_by.liked_by.id===loggedInUser?.id), [comment,loggedInUser]);
+    const [isLiked,setIsLiked] = useState<boolean>(false);
+    const [likeCount,setLikeCount] = useState<number>(comment._count.CommentLike);
+
+    const likeComment = async () => {
+        try {
+            const response = await axios.post(`${backendUrl}/api/comment/like`,{
+                "commentId":comment.id,
+            },{
+                withCredentials:true,
+            });
+            setIsLiked(response.data.isLiked);
+            response.data.isLiked ? setLikeCount((prev) => prev+1) : setLikeCount((prev) => prev-1);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => setIsLiked(liked),[liked])
 
   return (
     <>
@@ -56,10 +76,10 @@ const CommentCard = ({ comment,onRemoveComment}: Props) => {
           {comment.comment_text}
         </div>
         <div className="flex items-center gap-2">
-          <button className="text-2xl">
-            <AiOutlineLike />
+          <button onClick={likeComment} className="text-2xl">
+            {isLiked ? <AiFillLike/> : <AiOutlineLike />}
           </button>
-          <span>{comment._count.CommentLike}</span>
+          <span>{likeCount}</span>
         </div>
       </div>
     </>

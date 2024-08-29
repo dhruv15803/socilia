@@ -10,6 +10,7 @@ type createCommentRequestBody = {
 const createComment = async (req:Request,res:Response) => {
     try {
         const {post_id,comment_text} = req.body as createCommentRequestBody;
+        if(comment_text.trim()==="") return res.status(400).json({"success":false,"message":"comment text is empty"});
         const userId = req.userId;
         const user = await client.user.findUnique({where:{id:userId}});
         const post = await client.post.findUnique({where:{id:post_id}});
@@ -119,13 +120,51 @@ const deleteComment = async (req:Request,res:Response) => {
         console.log(error);
         return res.status(500).json({"success":false,"message":"Something went wrong when deleting comment"});
     }
-
-
 }
 
+const likeComment = async (req:Request,res:Response) => {
+    try {
+        const {commentId} = req.body as {commentId:string};
+        const userId = req.userId;
+        const user = await client.user.findUnique({where:{id:userId}});
+        const comment = await client.comment.findUnique({where:{id:commentId}});
+        if(!user || !comment) return res.status(400).json({"success":false,"message":"comment or user not found"});
+    
+        // if there is already a like on comment by user => remove like else add like
+        // 1. check like
+        let isLiked=false;
+        let responseMsg="";
+        const liked = await client.commentLike.findUnique({where:{liked_by_id_liked_comment_id:{
+            liked_by_id:user.id,
+            liked_comment_id:comment.id,
+        }}});
+        if (liked) {
+            // remove like
+            await client.commentLike.delete({where:{liked_by_id_liked_comment_id:{
+                liked_by_id:liked.liked_by_id,
+                liked_comment_id:liked.liked_comment_id,
+            }}});
+            isLiked = false;
+            responseMsg = "unliked comment";
+        } else {
+            const newLike = await client.commentLike.create({data:{
+                liked_by_id:user.id,
+                liked_comment_id:comment.id,
+            }});
+            isLiked=true;
+            responseMsg="liked comment";
+        }
+    
+        return res.status(200).json({"success":true,"message":responseMsg,isLiked});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"Something went wrong when liking comment"});
+    }
+}
 
 export {
     createComment,
     fetchPostComments,
     deleteComment,
+    likeComment,
 }

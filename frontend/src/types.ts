@@ -86,6 +86,6 @@ export type Comment = {
             email:string;
             user_image:string | null;
         }
-    },
+    }[],
     createdAt:string;
 }
