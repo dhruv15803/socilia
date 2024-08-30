@@ -8,6 +8,7 @@ import { RxAvatar } from "react-icons/rx";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import axios from "axios";
 import { backendUrl } from "@/App";
+import ChildComments from "./ChildComments";
 
 type Props = {
   comment: Comment;
@@ -19,6 +20,8 @@ const CommentCard = ({ comment,onRemoveComment}: Props) => {
     const liked = useMemo(() => comment.CommentLike.some((liked_by) => liked_by.liked_by.id===loggedInUser?.id), [comment,loggedInUser]);
     const [isLiked,setIsLiked] = useState<boolean>(false);
     const [likeCount,setLikeCount] = useState<number>(comment._count.CommentLike);
+    const [isViewReplies,setIsViewReplies] = useState<boolean>(false);
+    const [repliesCount,setRepliesCount] = useState<number>(comment._count.child_comments);
 
     const likeComment = async () => {
         try {
@@ -75,12 +78,19 @@ const CommentCard = ({ comment,onRemoveComment}: Props) => {
         <div className="flex items-center flex-wrap">
           {comment.comment_text}
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={likeComment} className="text-2xl">
-            {isLiked ? <AiFillLike/> : <AiOutlineLike />}
-          </button>
-          <span>{likeCount}</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <button onClick={likeComment} className="text-2xl">
+              {isLiked ? <AiFillLike/> : <AiOutlineLike />}
+            </button>
+            <span>{likeCount}</span>
+          </div>
+          {comment._count.child_comments > 0 && <div onClick={() => setIsViewReplies((prev) => !prev)} className="cursor-pointer flex items-center gap-1">
+            <span>{repliesCount}</span>
+            <span>{isViewReplies ? "hide replies" : "show replies"}</span>
+          </div>}
         </div>
+        {isViewReplies && <ChildComments onCommentChange={(isDelete:boolean) => isDelete ? setRepliesCount((prev) => prev-1) : setRepliesCount((prev) => prev+1)} postId={comment.post_id} parentCommentId={comment.id}/>}
       </div>
     </>
   );

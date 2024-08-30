@@ -1,22 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeComment = exports.deleteComment = exports.fetchPostComments = exports.createComment = void 0;
+exports.fetchChildComments = exports.likeComment = exports.deleteComment = exports.fetchPostComments = exports.createComment = void 0;
 const __1 = require("..");
 const createComment = async (req, res) => {
     try {
-        const { post_id, comment_text } = req.body;
+        const { post_id, comment_text, parent_comment_id } = req.body;
         if (comment_text.trim() === "")
-            return res.status(400).json({ "success": false, "message": "comment text is empty" });
+            return res
+                .status(400)
+                .json({ success: false, message: "comment text is empty" });
         const userId = req.userId;
         const user = await __1.client.user.findUnique({ where: { id: userId } });
         const post = await __1.client.post.findUnique({ where: { id: post_id } });
         if (!user || !post)
-            return res.status(400).json({ "success": false, "message": "invalid userid" });
-        const comment = await __1.client.comment.create({ data: {
+            return res
+                .status(400)
+                .json({ success: false, message: "invalid userid" });
+        const comment = await __1.client.comment.create({
+            data: {
                 comment_text: comment_text.trim(),
                 comment_author_id: user.id,
                 post_id: post.id,
-            }, include: {
+                parent_comment_id: parent_comment_id ? parent_comment_id : null,
+            },
+            include: {
                 _count: { select: { CommentLike: true } },
                 comment_author: {
                     select: {
@@ -24,7 +31,7 @@ const createComment = async (req, res) => {
                         username: true,
                         user_image: true,
                         email: true,
-                    }
+                    },
                 },
                 CommentLike: {
                     select: {
@@ -34,16 +41,22 @@ const createComment = async (req, res) => {
                                 username: true,
                                 email: true,
                                 user_image: true,
-                            }
-                        }
-                    }
-                }
-            } });
-        return res.status(201).json({ "success": true, comment });
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        return res.status(201).json({ success: true, comment });
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ "success": false, "message": "Something went wrong when creating comment" });
+        return res
+            .status(500)
+            .json({
+            success: false,
+            message: "Something went wrong when creating comment",
+        });
     }
 };
 exports.createComment = createComment;
@@ -55,16 +68,20 @@ const fetchPostComments = async (req, res) => {
         const { postId } = req.params;
         const post = await __1.client.post.findUnique({ where: { id: postId } });
         if (!post)
-            return res.status(400).json({ "success": false, "message": "invalid postid" });
-        const comments = await __1.client.comment.findMany({ where: { post_id: post.id }, include: {
-                _count: { select: { CommentLike: true } },
+            return res
+                .status(400)
+                .json({ success: false, message: "invalid postid" });
+        const comments = await __1.client.comment.findMany({
+            where: { post_id: post.id, parent_comment_id: null },
+            include: {
+                _count: { select: { CommentLike: true, child_comments: true } },
                 comment_author: {
                     select: {
                         id: true,
                         username: true,
                         email: true,
                         user_image: true,
-                    }
+                    },
                 },
                 CommentLike: {
                     select: {
@@ -74,32 +91,94 @@ const fetchPostComments = async (req, res) => {
                                 username: true,
                                 email: true,
                                 user_image: true,
-                            }
-                        }
-                    }
-                }
+                            },
+                        },
+                    },
+                },
             },
+            orderBy: { createdAt: "desc" },
             skip: skip,
             take: limit,
-            orderBy: { createdAt: "desc" }
         });
         const total = await __1.client.comment.count({ where: { post_id: post.id } });
-        return res.status(200).json({ "success": true, comments, "noOfPages": Math.ceil(total / limit) });
+        return res
+            .status(200)
+            .json({ success: true, comments, noOfPages: Math.ceil(total / limit) });
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ "success": false, "message": "Something went wrong when fetching post comments" });
+        return res
+            .status(500)
+            .json({
+            success: false,
+            message: "Something went wrong when fetching post comments",
+        });
     }
 };
 exports.fetchPostComments = fetchPostComments;
+const fetchChildComments = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = page * limit - limit;
+        const { parent_comment_id } = req.params;
+        const parent_comment = await __1.client.comment.findUnique({
+            where: { id: parent_comment_id },
+        });
+        if (!parent_comment)
+            return res
+                .status(400)
+                .json({ success: false, message: "parent comment not found" });
+        const child_comments = await __1.client.comment.findMany({
+            where: { parent_comment_id: parent_comment_id },
+            include: {
+                _count: { select: { CommentLike: true, child_comments: true } },
+                comment_author: {
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                        user_image: true,
+                    },
+                },
+                CommentLike: {
+                    select: {
+                        liked_by: {
+                            select: {
+                                id: true,
+                                email: true,
+                                username: true,
+                                user_image: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: { createdAt: "desc" },
+            skip: skip,
+            take: limit,
+        });
+        const total = await __1.client.comment.count({ where: { parent_comment_id: parent_comment_id } });
+        res.status(200).json({ "success": true, child_comments, "noOfPages": Math.ceil(total / limit) });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when fetching child comments" });
+    }
+};
+exports.fetchChildComments = fetchChildComments;
 const deleteComment = async (req, res) => {
     try {
         const { commentId } = req.params;
         const userId = req.userId;
-        const comment = await __1.client.comment.findUnique({ where: { id: commentId } });
+        const comment = await __1.client.comment.findUnique({
+            where: { id: commentId },
+        });
         const user = await __1.client.user.findUnique({ where: { id: userId } });
         if (!comment || !user)
-            return res.status(400).json({ "success": false, "message": "user or comment not found" });
+            return res
+                .status(400)
+                .json({ success: false, message: "user or comment not found" });
         // check if comments author is the current authenticated user
         let responseMsg = "";
         let isDelete = false;
@@ -112,11 +191,18 @@ const deleteComment = async (req, res) => {
             isDelete = false;
             responseMsg = "user not author of comment";
         }
-        return res.status(200).json({ "success": true, "message": responseMsg, isDelete });
+        return res
+            .status(200)
+            .json({ success: true, message: responseMsg, isDelete });
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ "success": false, "message": "Something went wrong when deleting comment" });
+        return res
+            .status(500)
+            .json({
+            success: false,
+            message: "Something went wrong when deleting comment",
+        });
     }
 };
 exports.deleteComment = deleteComment;
@@ -125,39 +211,60 @@ const likeComment = async (req, res) => {
         const { commentId } = req.body;
         const userId = req.userId;
         const user = await __1.client.user.findUnique({ where: { id: userId } });
-        const comment = await __1.client.comment.findUnique({ where: { id: commentId } });
+        const comment = await __1.client.comment.findUnique({
+            where: { id: commentId },
+        });
         if (!user || !comment)
-            return res.status(400).json({ "success": false, "message": "comment or user not found" });
+            return res
+                .status(400)
+                .json({ success: false, message: "comment or user not found" });
         // if there is already a like on comment by user => remove like else add like
         // 1. check like
         let isLiked = false;
         let responseMsg = "";
-        const liked = await __1.client.commentLike.findUnique({ where: { liked_by_id_liked_comment_id: {
+        const liked = await __1.client.commentLike.findUnique({
+            where: {
+                liked_by_id_liked_comment_id: {
                     liked_by_id: user.id,
                     liked_comment_id: comment.id,
-                } } });
+                },
+            },
+        });
         if (liked) {
             // remove like
-            await __1.client.commentLike.delete({ where: { liked_by_id_liked_comment_id: {
+            await __1.client.commentLike.delete({
+                where: {
+                    liked_by_id_liked_comment_id: {
                         liked_by_id: liked.liked_by_id,
                         liked_comment_id: liked.liked_comment_id,
-                    } } });
+                    },
+                },
+            });
             isLiked = false;
             responseMsg = "unliked comment";
         }
         else {
-            const newLike = await __1.client.commentLike.create({ data: {
+            const newLike = await __1.client.commentLike.create({
+                data: {
                     liked_by_id: user.id,
                     liked_comment_id: comment.id,
-                } });
+                },
+            });
             isLiked = true;
             responseMsg = "liked comment";
         }
-        return res.status(200).json({ "success": true, "message": responseMsg, isLiked });
+        return res
+            .status(200)
+            .json({ success: true, message: responseMsg, isLiked });
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ "success": false, "message": "Something went wrong when liking comment" });
+        return res
+            .status(500)
+            .json({
+            success: false,
+            message: "Something went wrong when liking comment",
+        });
     }
 };
 exports.likeComment = likeComment;

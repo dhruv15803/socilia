@@ -72,6 +72,7 @@ export type Comment = {
     post_id:string;
     _count:{
         CommentLike:number;
+        child_comments:number;
     },
     comment_author:{
         id:string;

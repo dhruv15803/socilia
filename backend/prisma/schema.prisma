@@ -66,7 +66,10 @@ model Comment {
   post              Post          @relation(fields: [post_id], references: [id], onDelete: Cascade)
   post_id           String
   CommentLike       CommentLike[]
+  parent_comment    Comment?      @relation("parent_comment_id", fields: [parent_comment_id], references: [id], onDelete: Cascade)
+  parent_comment_id String?
   createdAt         DateTime      @default(now())
+  child_comments    Comment[]     @relation("parent_comment_id")
 }
 
 model CommentLike {

@@ -9,6 +9,7 @@ const comment_controller_1 = require("../controllers/comment.controller");
 const router = express_1.default.Router();
 router.post("/create", auth_middleware_1.authenticatedUser, comment_controller_1.createComment);
 router.get("/comments/:postId", comment_controller_1.fetchPostComments);
-router.delete("/:commentId", auth_middleware_1.authenticatedUser, comment_controller_1.deleteComment);
+router.get("/child_comments/:parent_comment_id", comment_controller_1.fetchChildComments);
 router.post("/like", auth_middleware_1.authenticatedUser, comment_controller_1.likeComment);
+router.delete("/:commentId", auth_middleware_1.authenticatedUser, comment_controller_1.deleteComment);
 exports.default = router;
