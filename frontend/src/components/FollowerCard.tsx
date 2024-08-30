@@ -26,4 +26,4 @@ const FollowerCard = ({follower,followUser,followings}:Props) => {
   )
 }
 
-export default FollowerCard
+export default FollowerCard;

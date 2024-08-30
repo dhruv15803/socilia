@@ -120,6 +120,17 @@ const editProfile = async (req:Request,res:Response) => {
 
 }
 
+const searchUsers = async (req:Request,res:Response) => {
+    try {
+        const {searchText} = req.query as {searchText:string};
+        // search by username -> return all username that starts with searchText or ends with searchText or have searchText in the middle
+        const users = await client.user.findMany({where:{username:{contains:searchText}}});
+        return res.status(200).json({"success":true,users});
+    } catch (error) {
+        return res.status(500).json({"success":false,"message":"Something went wrong when searching users"});
+    }
+}
+
 
 export {
     followUser,
@@ -127,4 +138,5 @@ export {
     fetchFollowing,
     fetchUsers,
     editProfile,
+    searchUsers,
 }

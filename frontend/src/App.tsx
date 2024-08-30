@@ -23,7 +23,7 @@ function App() {
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />
               <Route path="/" element={<ProtectedRoute />}>
-                <Route index element={<Home />} />
+                <Route index element={<Home/>} />
                 <Route path="/create" element={<CreatePost />} />
                 <Route path="/post/:postId" element={<PostDetail/>}/>
                 <Route path="/profile" element={<ProfileLayout/>}>

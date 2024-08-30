@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
+exports.searchUsers = exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
 const __1 = require("..");
 const fetchUsers = async (req, res) => {
     try {
@@ -118,3 +118,15 @@ const editProfile = async (req, res) => {
     }
 };
 exports.editProfile = editProfile;
+const searchUsers = async (req, res) => {
+    try {
+        const { searchText } = req.query;
+        // search by username -> return all username that starts with searchText or ends with searchText or have searchText in the middle
+        const users = await __1.client.user.findMany({ where: { username: { contains: searchText } } });
+        return res.status(200).json({ "success": true, users });
+    }
+    catch (error) {
+        return res.status(500).json({ "success": false, "message": "Something went wrong when searching users" });
+    }
+};
+exports.searchUsers = searchUsers;

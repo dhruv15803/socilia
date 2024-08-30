@@ -36,7 +36,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="flex items-center p-2 justify-between border-b md:px-10">
+      <div className="flex items-center p-2 justify-between border-b md:px-10 fixed top-0 w-full bg-white">
         <Link to="/">
           {" "}
           <div className="text-2xl font-semibold">Socilia</div>
