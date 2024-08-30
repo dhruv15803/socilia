@@ -89,4 +89,12 @@ export type Comment = {
         }
     }[],
     createdAt:string;
+    parent_comment:{
+        comment_author:{
+            id:string;
+            email:string;
+            username:string;
+            user_image:string | null;
+        }
+    }
 }

@@ -52,6 +52,18 @@ const createComment = async (req: Request, res: Response) => {
             },
           },
         },
+        parent_comment:{
+            select:{
+                comment_author:{
+                    select:{
+                        id:true,
+                        email:true,
+                        username:true,
+                        user_image:true,
+                    }
+                }
+            }
+        },
       },
     });
 
@@ -101,6 +113,18 @@ const fetchPostComments = async (req: Request, res: Response) => {
               },
             },
           },
+        },
+        parent_comment:{
+            select:{
+                comment_author:{
+                    select:{
+                        id:true,
+                        email:true,
+                        username:true,
+                        user_image:true,
+                    }
+                }
+            }
         },
       },
       orderBy: { createdAt: "desc" },
@@ -159,6 +183,18 @@ const fetchChildComments = async (req: Request, res: Response) => {
                 },
               },
             },
+            parent_comment:{
+                select:{
+                    comment_author:{
+                        select:{
+                            id:true,
+                            email:true,
+                            username:true,
+                            user_image:true,
+                        }
+                    }
+                }
+            }
           },
           orderBy: { createdAt: "desc" },
           skip: skip,

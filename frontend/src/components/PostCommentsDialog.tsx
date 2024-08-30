@@ -29,10 +29,12 @@ const PostCommentsDialog = ({
 }: Props) => {
   const { comments, isLoading, setComments } = useComments(postId);
   const [commentText, setCommentText] = useState<string>("");
+  const [isCommentSubmitting,setIsCommentSubmitting] = useState<boolean>(false);
 
   const handleCreateComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setIsCommentSubmitting(true);
       const response = await axios.post(
         `${backendUrl}/api/comment/create`,
         {
@@ -48,6 +50,8 @@ const PostCommentsDialog = ({
       setCommentText("");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsCommentSubmitting(false);
     }
   };
 
@@ -107,7 +111,7 @@ const PostCommentsDialog = ({
               type="text"
             />
             <div className="flex items-center justify-end">
-              <Button disabled={commentText.length==0}>comment</Button>
+              <Button disabled={commentText.length==0 || isCommentSubmitting}>comment</Button>
             </div>
           </form>
           {comments.map((comment) => {

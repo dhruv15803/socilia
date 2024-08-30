@@ -5,7 +5,6 @@ import { useContext, useEffect, useState } from "react";
 import { RxAvatar } from "react-icons/rx";
 import { useParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { FaRegCommentAlt } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import { AiFillLike } from "react-icons/ai";
 import { AppContext } from "@/Context/AppContext";

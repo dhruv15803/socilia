@@ -13,9 +13,10 @@ import ChildComments from "./ChildComments";
 type Props = {
   comment: Comment;
   onRemoveComment:(commentId:string) => Promise<void>;
+  isChild?:boolean;
 };
 
-const CommentCard = ({ comment,onRemoveComment}: Props) => {
+const CommentCard = ({ comment,onRemoveComment,isChild=false}: Props) => {
     const {loggedInUser} = useContext(AppContext) as AppContextType;
     const liked = useMemo(() => comment.CommentLike.some((liked_by) => liked_by.liked_by.id===loggedInUser?.id), [comment,loggedInUser]);
     const [isLiked,setIsLiked] = useState<boolean>(false);
@@ -41,7 +42,10 @@ const CommentCard = ({ comment,onRemoveComment}: Props) => {
 
   return (
     <>
-      <div className="flex flex-col gap-2 border-b p-2">
+      <div className={`flex flex-col gap-2 border-b p-2 ${isChild ? "ml-2 relative" : ""}`}>
+        {isChild && (
+        <div className="absolute left-0 top-0 w-6 h-full border-l-2 border-gray-300"></div>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {comment.comment_author.user_image !== null ? (
@@ -75,20 +79,20 @@ const CommentCard = ({ comment,onRemoveComment}: Props) => {
             <span>{postCreatedAt(comment.createdAt)}</span>
           </div>
         </div>
+        {comment.parent_comment && <div className="flex flex-wrap items-center text-gray-600">{`Replying to @${comment.parent_comment.comment_author.username}`}</div>}
         <div className="flex items-center flex-wrap">
           {comment.comment_text}
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <button onClick={likeComment} className="text-2xl">
-              {isLiked ? <AiFillLike/> : <AiOutlineLike />}
+              {isLiked ? <AiFillLike/> : <AiOutlineLike/>}
             </button>
             <span>{likeCount}</span>
           </div>
-          {comment._count.child_comments > 0 && <div onClick={() => setIsViewReplies((prev) => !prev)} className="cursor-pointer flex items-center gap-1">
-            <span>{repliesCount}</span>
-            <span>{isViewReplies ? "hide replies" : "show replies"}</span>
-          </div>}
+          <div onClick={() => setIsViewReplies((prev) => !prev)} className="cursor-pointer flex items-center gap-1">
+            {isViewReplies ? `Hide replies` : repliesCount > 0 ? `Show ${repliesCount} replies` : "Reply"}
+          </div>
         </div>
         {isViewReplies && <ChildComments onCommentChange={(isDelete:boolean) => isDelete ? setRepliesCount((prev) => prev-1) : setRepliesCount((prev) => prev+1)} postId={comment.post_id} parentCommentId={comment.id}/>}
       </div>

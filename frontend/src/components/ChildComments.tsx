@@ -1,10 +1,12 @@
 import { useComments } from '@/hooks/useComments'
-import React from 'react'
+import React, { useState } from 'react'
 import Loader from './Loader';
 import CommentCard from './CommentCard';
 import { Comment } from '@/types';
 import axios from 'axios';
 import { backendUrl } from '@/App';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 type Props = {
     postId:string;
@@ -13,8 +15,9 @@ type Props = {
 }
 
 const ChildComments = ({parentCommentId,postId,onCommentChange}:Props) => {
-
+    const [commentText,setCommentText] = useState<string>("");
     const {comments:childComments,isLoading,setComments:setChildComments} = useComments(postId,parentCommentId);
+    const [isCommentSubmitting,setIsCommentSubmitting] = useState<boolean>(false);
 
     const handleRemoveComment = async (commentId: string) => {
         try {
@@ -36,6 +39,26 @@ const ChildComments = ({parentCommentId,postId,onCommentChange}:Props) => {
         }
       };
 
+      const handleCreateChildComment = async (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            setIsCommentSubmitting(true);
+            const response = await axios.post(`${backendUrl}/api/comment/create`,{
+                "comment_text":commentText,
+                "post_id":postId,
+                "parent_comment_id":parentCommentId,
+            },{
+                withCredentials:true,
+            });
+            setCommentText("");
+            setChildComments((prevComments) => [response.data.comment,...prevComments]);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsCommentSubmitting(false);
+        }
+      }
+
     
     if(isLoading) return (
         <>
@@ -47,9 +70,13 @@ const ChildComments = ({parentCommentId,postId,onCommentChange}:Props) => {
 
     return (
     <>
-    <div className="flex flex-col mx-8 gap-4">
+    <div className="flex flex-col gap-4">
+        <form onSubmit={(e) => handleCreateChildComment(e)} className='flex items-center gap-2'>
+            <Input value={commentText} onChange={(e) => setCommentText(e.target.value)} type='text' placeholder='write reply'/>
+            <Button disabled={commentText.length==0 || isCommentSubmitting}>reply</Button>
+        </form>
         {childComments.map((comment:Comment) => {
-            return <CommentCard onRemoveComment={handleRemoveComment} key={comment.id} comment={comment}/>
+            return <CommentCard onRemoveComment={handleRemoveComment} key={comment.id} comment={comment} isChild={true}/>
         })}
     </div>
     </>
