@@ -11,6 +11,9 @@ import Profile from "./Pages/Profile";
 import ProfileLayout from "./Layouts/ProfileLayout";
 import MyPosts from "./Pages/MyPosts";
 import LikedPosts from "./Pages/LikedPosts";
+import UserProfileLayout from "./Layouts/UserProfileLayout";
+import UserPosts from "./Pages/UserPosts";
+import UserLikedPosts from "./Pages/UserLikedPosts";
 export const backendUrl = "http://localhost:5000";
 
 function App() {
@@ -30,6 +33,10 @@ function App() {
                   <Route index element={<MyPosts/>}/>
                   <Route path="liked_posts" element={<LikedPosts/>}/>
                   <Route/>
+                </Route>
+                <Route path="/profile/:userId" element={<UserProfileLayout/>}>
+                  <Route index element={<UserPosts/>}/>
+                  <Route path="liked_posts" element={<UserLikedPosts/>}/>
                 </Route>
               </Route>
             </Route>

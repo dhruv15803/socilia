@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchUsers = exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
+exports.fetchUser = exports.searchUsers = exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
 const __1 = require("..");
 const fetchUsers = async (req, res) => {
     try {
@@ -46,7 +46,7 @@ const followUser = async (req, res) => {
 exports.followUser = followUser;
 const fetchFollowers = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.query.userId || req.userId;
         const user = await __1.client.user.findUnique({ where: { id: userId } });
         if (!user)
             return res.status(400).json({ "success": false, "message": "Invalid userId" });
@@ -75,7 +75,7 @@ const fetchFollowers = async (req, res) => {
 exports.fetchFollowers = fetchFollowers;
 const fetchFollowing = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.query.userId || req.userId;
         const user = await __1.client.user.findUnique({ where: { id: userId } });
         if (!user)
             return res.status(400).json({ "success": false, "message": "invalid userId" });
@@ -130,3 +130,17 @@ const searchUsers = async (req, res) => {
     }
 };
 exports.searchUsers = searchUsers;
+const fetchUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await __1.client.user.findUnique({ where: { id: userId } });
+        if (!user)
+            return res.status(400).json({ "success": false, "message": "user not found" });
+        return res.status(200).json({ "success": true, user });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when fetching user" });
+    }
+};
+exports.fetchUser = fetchUser;

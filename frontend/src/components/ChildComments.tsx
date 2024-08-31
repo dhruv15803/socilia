@@ -52,6 +52,7 @@ const ChildComments = ({parentCommentId,postId,onCommentChange}:Props) => {
             });
             setCommentText("");
             setChildComments((prevComments) => [response.data.comment,...prevComments]);
+            onCommentChange(false);
         } catch (error) {
             console.log(error);
         } finally {

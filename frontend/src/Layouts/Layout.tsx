@@ -6,9 +6,9 @@ const Layout = () => {
   return (
     <>
       <Navbar/>
-      <div className="flex w-full gap-4">
-          <Sidebar/>
-          <Outlet/>
+      <div className="flex gap-4 w-full">
+        <Sidebar/>
+        <Outlet/>
       </div>
     </>
   );

@@ -13,4 +13,5 @@ router.get('/following', auth_middleware_1.authenticatedUser, user_controller_1.
 router.get("/users", user_controller_1.fetchUsers);
 router.put("/edit", auth_middleware_1.authenticatedUser, user_controller_1.editProfile);
 router.get("/search", user_controller_1.searchUsers);
+router.get("/:userId", user_controller_1.fetchUser);
 exports.default = router;

@@ -9,16 +9,17 @@ import {
 } from "@/components/ui/sheet";
 import { SearchIcon } from "lucide-react";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchUsers } from "@/hooks/useSearchUsers";
 import Loader from "./Loader";
 import { RxAvatar } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
 
 const SearchUserSheet = () => {
     const [searchText,setSearchText] = useState<string>("");
     const debouncedSearchText = useDebounce(searchText);
-    const {isLoading,users} = useSearchUsers(debouncedSearchText);    
+    const {isLoading,users} = useSearchUsers(debouncedSearchText);
+    const navigate = useNavigate();    
 
     return (
     <>
@@ -42,7 +43,7 @@ const SearchUserSheet = () => {
                 </div>
             </> : <>
                 {users.map((user) => {
-                return <div key={user.id} className="cursor-pointer flex items-center gap-2 p-2 hover:bg-gray-50 hover:duration-300">
+                return <div onClick={() => navigate(`/profile/${user.id}`)} key={user.id} className="cursor-pointer flex items-center gap-2 p-2 hover:bg-gray-50 hover:duration-300">
                     {user.user_image!==null ? <><img className="rounded-full w-12" src={user.user_image} alt="" /></> : <><button className="text-3xl"><RxAvatar/></button></>}
                     <span className="font-semibold">{user.username}</span>
                 </div>

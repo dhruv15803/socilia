@@ -44,7 +44,7 @@ const followUser = async (req:Request,res:Response) => {
 
 const fetchFollowers = async (req:Request,res:Response) => {
     try {
-        const userId = req.userId;
+        const userId = (req.query.userId as string) || req.userId;
         const user = await client.user.findUnique({where:{id:userId}});
         if(!user) return res.status(400).json({"success":false,"message":"Invalid userId"});
         const followers = await client.user.findUnique({where:{id:user.id},include:{
@@ -72,7 +72,7 @@ const fetchFollowers = async (req:Request,res:Response) => {
 
 const fetchFollowing = async (req:Request,res:Response) => {
     try {
-        const userId = req.userId;
+        const userId = (req.query.userId as string) || req.userId;
         const user = await client.user.findUnique({where:{id:userId}});
         if(!user) return res.status(400).json({"success":false,"message":"invalid userId"});
         const following = await client.user.findUnique({where:{id:userId},include:{
@@ -131,6 +131,17 @@ const searchUsers = async (req:Request,res:Response) => {
     }
 }
 
+const fetchUser = async (req:Request,res:Response) => {
+    try {
+        const {userId} = req.params;
+        const user = await client.user.findUnique({where:{id:userId}});
+        if(!user) return res.status(400).json({"success":false,"message":"user not found"});
+        return res.status(200).json({"success":true,user});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"Something went wrong when fetching user"});
+    }
+}
 
 export {
     followUser,
@@ -139,4 +150,5 @@ export {
     fetchUsers,
     editProfile,
     searchUsers,
+    fetchUser,
 }

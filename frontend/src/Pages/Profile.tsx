@@ -67,7 +67,7 @@ const Profile = () => {
 
   return (
     <>
-        <div className="flex flex-col border rounded-lg p-4 gap-2">
+        <div className="flex flex-col border rounded-lg p-4 gap-2 mt-16">
           <div className="flex justify-between">
             <img
               className="rounded-full w-28 aspect-auto"
@@ -160,6 +160,7 @@ const Profile = () => {
                               {followings.map((following: Following) => {
                                 return (
                                   <FollowingCard
+                                    followings={followings}
                                     followUser={followUser}
                                     key={following.following.id}
                                     following={following}

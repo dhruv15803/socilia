@@ -1,6 +1,4 @@
-import { SearchIcon } from "lucide-react";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { Input } from "./ui/input";
+
 import SearchUserSheet from "./SearchUserSheet";
 
 const Sidebar = () => {
