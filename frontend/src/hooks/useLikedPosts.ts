@@ -3,7 +3,7 @@ import { Post } from "@/types"
 import axios from "axios";
 import { useEffect, useState } from "react"
 
-export const useLikedPosts = (page=1,limit=10) => {
+export const useLikedPosts = (userId?:string,page=1,limit=10) => {
     const [likedPosts,setLikedPosts] = useState<Post[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(false);
     const [noOfPages,setNoOfPages] = useState<number>(1);
@@ -11,6 +11,7 @@ export const useLikedPosts = (page=1,limit=10) => {
     const params = new URLSearchParams();
     params.set("page",page.toString());
     params.set("limit",limit.toString());
+    userId && params.set("userId",userId);
 
     useEffect(() => {
         const fetchLikedPosts = async () => {

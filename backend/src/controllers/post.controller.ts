@@ -135,7 +135,7 @@ const fetchMyPosts = async (req:Request,res:Response) => {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = page * limit - limit;
-        const userId = req.userId;
+        const userId = (req.query.userId as string) || req.userId;
         const user = await client.user.findUnique({where:{id:userId}});
         if(!user) return res.status(400).json({"success":false,"message":"user invalid id"});
         const posts = await client.post.findMany({where:{post_author_id:user.id},include:{
@@ -178,7 +178,7 @@ const fetchLikedPosts = async (req:Request,res:Response) => {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = page * limit - limit;
-        const userId = req.userId;
+        const userId = (req.query.userId as string) || req.userId;
         const user = await client.user.findUnique({where:{id:userId}});
         if(!user) return res.status(400).json({"success":false,"message":"invalid userid"});
         const liked_posts = await client.post.findMany({where:{PostLike:{

@@ -9,7 +9,7 @@ import axios from "axios";
 import { backendUrl } from "@/App";
 import { useGetFollowers } from "@/hooks/useGetFollowers";
 import { AppContext } from "@/Context/AppContext";
-import { AppContextType, Follower, Following, User } from "@/types";
+import { AppContextType, Follower, Following} from "@/types";
 import {
     Dialog,
     DialogContent,

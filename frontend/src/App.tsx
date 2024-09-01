@@ -29,14 +29,14 @@ function App() {
                 <Route index element={<Home/>} />
                 <Route path="/create" element={<CreatePost />} />
                 <Route path="/post/:postId" element={<PostDetail/>}/>
+                <Route path="/profile" element={<UserProfileLayout/>}>
+                  <Route path=":userId" element={<UserPosts/>}/>
+                  <Route path="liked_posts/:userId" element={<UserLikedPosts/>}/>
+                </Route>
                 <Route path="/profile" element={<ProfileLayout/>}>
                   <Route index element={<MyPosts/>}/>
                   <Route path="liked_posts" element={<LikedPosts/>}/>
                   <Route/>
-                </Route>
-                <Route path="/profile/:userId" element={<UserProfileLayout/>}>
-                  <Route index element={<UserPosts/>}/>
-                  <Route path="liked_posts" element={<UserLikedPosts/>}/>
                 </Route>
               </Route>
             </Route>

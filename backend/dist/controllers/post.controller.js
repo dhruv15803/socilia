@@ -135,7 +135,7 @@ const fetchMyPosts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = page * limit - limit;
-        const userId = req.userId;
+        const userId = req.query.userId || req.userId;
         const user = await __1.client.user.findUnique({ where: { id: userId } });
         if (!user)
             return res.status(400).json({ "success": false, "message": "user invalid id" });
@@ -180,7 +180,7 @@ const fetchLikedPosts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = page * limit - limit;
-        const userId = req.userId;
+        const userId = req.query.userId || req.userId;
         const user = await __1.client.user.findUnique({ where: { id: userId } });
         if (!user)
             return res.status(400).json({ "success": false, "message": "invalid userid" });

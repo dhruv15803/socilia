@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 
 
-export const useMyPosts = (page=1,limit=10) => {
+export const useMyPosts = (userId?:string,page=1,limit=10) => {
     const [posts,setPosts] = useState<Post[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(false);
     const [noOfPages,setNoOfPages] = useState<number>(1);
@@ -14,6 +14,7 @@ export const useMyPosts = (page=1,limit=10) => {
     const params = new URLSearchParams();
     params.set("page",page.toString());
     params.set("limit",limit.toString());
+    userId && params.set("userId",userId);
 
     useEffect(() => {
         const fetchMyPosts = async () => {

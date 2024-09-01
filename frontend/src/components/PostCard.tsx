@@ -15,7 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 
 type Props = {
   post: Post;
-  onRemovePost:(postId:string) => void;
+  onRemovePost?:(postId:string) => void;
 };
 
 const PostCard = ({ post,onRemovePost}: Props) => {
@@ -64,7 +64,7 @@ const PostCard = ({ post,onRemovePost}: Props) => {
         withCredentials:true,
       });
       console.log(response);
-      onRemovePost(post.id);
+      onRemovePost && onRemovePost(post.id)
     } catch (error) {
       console.log(error);
     } finally {

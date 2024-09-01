@@ -5,7 +5,7 @@ import { Post } from "@/types";
 
 
 const MyPosts = () => {
-  const { posts, isLoading,setPosts } = useMyPosts();
+  const { posts,isLoading,setPosts } = useMyPosts();
 
   const handleRemovePost = (postId:string) => {
     const newPosts = posts.filter((post:Post) => post.id!==postId);
