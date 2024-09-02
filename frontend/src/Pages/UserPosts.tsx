@@ -1,14 +1,19 @@
 import Loader from '@/components/Loader';
+import Pagination from '@/components/Pagination';
 import PostCard from '@/components/PostCard';
 import { useMyPosts } from '@/hooks/useMyPosts'
 import { Post } from '@/types';
-import React from 'react'
+import  { useState } from 'react'
 import { useParams } from 'react-router-dom'
+
+
+const POSTS_LIMIT=10;
+
 
 const UserPosts = () => {
   const {userId} = useParams();
-  const {posts,noOfPages,isLoading} = useMyPosts(userId);
-
+  const [page,setPage] = useState<number>(1);
+  const {posts,noOfPages,isLoading} = useMyPosts(userId,page,POSTS_LIMIT);
 
 
 
@@ -26,9 +31,10 @@ const UserPosts = () => {
         {posts.map((post:Post) => {
           return <PostCard key={post.id} post={post}/>
         })}
+        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
       </div>
     </>
   )
 }
 
-export default UserPosts
+export default UserPosts;

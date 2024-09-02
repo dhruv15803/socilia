@@ -1,11 +1,16 @@
 import Loader from "@/components/Loader";
+import Pagination from "@/components/Pagination";
 import PostCard from "@/components/PostCard";
 import { useMyPosts } from "@/hooks/useMyPosts";
 import { Post } from "@/types";
+import { useState } from "react";
 
+
+const POSTS_LIMIT=10;
 
 const MyPosts = () => {
-  const { posts,isLoading,setPosts } = useMyPosts();
+  const [page,setPage] = useState<number>(1);
+  const { posts,isLoading,setPosts ,noOfPages} = useMyPosts(undefined,page,POSTS_LIMIT);
 
   const handleRemovePost = (postId:string) => {
     const newPosts = posts.filter((post:Post) => post.id!==postId);
@@ -29,6 +34,7 @@ const MyPosts = () => {
         {posts.map((post) => {
           return <PostCard onRemovePost={handleRemovePost} key={post.id} post={post} />;
         })}
+        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
       </div>
     </>
   );

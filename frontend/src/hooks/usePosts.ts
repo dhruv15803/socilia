@@ -28,7 +28,7 @@ export const usePosts = (page=1,limit=10) => {
             }
         }
         fetchPosts();
-    },[page,limit])
+    },[page,limit]);
 
     return {posts,isLoading,noOfPages,setPosts};
 }

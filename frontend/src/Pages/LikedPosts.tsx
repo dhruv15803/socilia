@@ -1,13 +1,17 @@
 import Loader from '@/components/Loader';
+import Pagination from '@/components/Pagination';
 import PostCard from '@/components/PostCard';
 import { useLikedPosts } from '@/hooks/useLikedPosts'
 import { Post } from '@/types';
+import { useState } from 'react';
+
+const POSTS_LIMIT = 10;
+
 
 const LikedPosts = () => {
-    const {likedPosts,isLoading,setLikedPosts} = useLikedPosts();
+    const [page,setPage] = useState<number>(1);
+    const {likedPosts,isLoading,setLikedPosts,noOfPages} = useLikedPosts(undefined,page,POSTS_LIMIT);
 
-
-    console.log(likedPosts);
 
     const handleRemovePost = (postId:string) => {
         const newPosts = likedPosts.filter((post:Post) => post.id!==postId);
@@ -28,6 +32,7 @@ const LikedPosts = () => {
         {likedPosts.map((post) => {
             return <PostCard onRemovePost={handleRemovePost} key={post.id} post={post}/>
         })}
+        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
     </div>
     </>
   )
