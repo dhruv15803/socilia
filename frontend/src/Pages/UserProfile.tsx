@@ -9,7 +9,7 @@ import axios from "axios";
 import { backendUrl } from "@/App";
 import { useGetFollowers } from "@/hooks/useGetFollowers";
 import { AppContext } from "@/Context/AppContext";
-import { AppContextType, Follower, Following} from "@/types";
+import { AppContextType, Follower, Following, followUserResponse} from "@/types";
 import {
     Dialog,
     DialogContent,
@@ -20,16 +20,19 @@ import {
   } from "@/components/ui/dialog";
 import FollowerCard from "@/components/FollowerCard";
 import FollowingCard from "@/components/FollowingCard";
+import { useFollowRequestsSent } from "@/hooks/useFollowRequestsSent";
 
 const UserProfile = () => {
   const {loggedInUser} = useContext(AppContext) as AppContextType;
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [isRequested,setIsRequested] = useState<boolean>(false);
   const { userId } = useParams();
   if (!userId) return <>user not found</>;
   const { isLoading, user } = useGetUser(userId);
   const {followers,isLoading:isFollowersLoading,setFollowers,setFollowersCount,followersCount} = useGetFollowers(userId);
   const {following:followings,followingCount,isLoading:isFollowingLoading} = useGetFollowing(userId);
   const {following:myFollowings,setFollowing:setMyFollwings} = useGetFollowing();
+  const {followRequestsSent,followRequestsSentCount,isLoading:isFollowRequestsSentLoading,setFollowRequestsSent,setFollowRequestsSentCount} = useFollowRequestsSent();
 
   console.log(followings);
 
@@ -44,21 +47,21 @@ const UserProfile = () => {
           withCredentials: true,
         }
       );
-      setIsFollowing(response.data.isFollow);
-      if(response.data.isFollow) {
-        setFollowersCount((prevCount) => prevCount+1);
-        setFollowers((prev) => [...prev ,{
-            follower:{
-              email:loggedInUser?.email!,
-              id:loggedInUser?.id!,
-              user_image:loggedInUser?.user_image!,
-              username:loggedInUser?.username!,
-            }
-        }]);
-      } else {
-        setFollowersCount((prevCount) => prevCount-1);
+      const data = response.data as followUserResponse;
+      if(data.unfollowed) {
+        // remove user id from my followings. 
+        setIsFollowing(false);
+        setFollowersCount((prev) => prev-1);
         const newFollowers = followers.filter((follower) => follower.follower.id!==loggedInUser?.id);
         setFollowers(newFollowers);
+      } else if(data.isRequested) {
+        setIsRequested(true);
+        setFollowRequestsSentCount((prev) => prev+1);
+        setFollowRequestsSent((prev) => [...prev , {request_receiver:data.newRequest?.request_receiver!}]);
+      } else {
+        setIsRequested(false);
+        const newFollowRequestsSent = followRequestsSent.filter((followRequest) => followRequest.request_receiver.id!==loggedInUser?.id);
+        setFollowRequestsSent(newFollowRequestsSent);
       }
     } catch (error) {
       console.log(error);
@@ -76,18 +79,20 @@ const UserProfile = () => {
               withCredentials: true,
             }
         );
-        if(response.data.isFollow) {
-            setMyFollwings((prev) => [...prev , {
-                following:{
-                    email:response.data.following.email,
-                    id:response.data.following.id,
-                    user_image:response.data.following.user_image,
-                    username:response.data.following.username,
-                }
-            }]);
+        const data = response.data as followUserResponse;
+        if(data.unfollowed) {
+          // change my followings
+          const newMyFollowings = myFollowings.filter((myFollowing) => myFollowing.following.id!==followId);
+          setMyFollwings(newMyFollowings);
+        } else if (data.isRequested) {
+          // add request to followRequests
+          setFollowRequestsSentCount((prev) => prev+1);
+          setFollowRequestsSent((prev) => [...prev , {request_receiver:data.newRequest?.request_receiver!}]);
         } else {
-            const newMyFollowings = myFollowings.filter((following) => following.following.id!==followId);
-            setMyFollwings(newMyFollowings);
+          // remove request 
+          setFollowRequestsSentCount((prev) => prev-1);
+          const newFollowRequests = followRequestsSent.filter((followRequest) => followRequest.request_receiver.id!==followId);
+          setFollowRequestsSent(newFollowRequests);
         }
     } catch (error) {
         console.log(error);
@@ -96,7 +101,9 @@ const UserProfile = () => {
 
   useEffect(() => {
     const isFollow = followers.some((follower) => follower.follower.id === loggedInUser?.id);
+    const isRequested = followRequestsSent.some((followRequest) => followRequest.request_receiver.id===userId);
     setIsFollowing(isFollow);
+    setIsRequested(isRequested);
   }, [user, followers]);
 
   if (isLoading)
@@ -119,7 +126,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="flex flex-col border rounded-lg p-4 gap-2 mt-16">
+      <div className="flex flex-col border rounded-lg p-4 gap-2 mt-12">
         <div className="flex justify-between">
           <img
             className="rounded-full w-28 aspect-auto"
@@ -130,7 +137,7 @@ const UserProfile = () => {
             onClick={followUserProfile}
             variant={isFollowing ? "destructive" : "default"}
           >
-            {isFollowing ? "Unfollow" : "Follow"}
+            {isFollowing ? "Unfollow" : isRequested ? "Requested" : "Follow"}
           </Button>
         </div>
         {(user.firstName !== null || user.lastName !== null) && (
@@ -166,6 +173,7 @@ const UserProfile = () => {
                               {followers.map((follow: Follower) => {
                                 return (
                                   <FollowerCard
+                                    followRequestsSent={followRequestsSent}
                                     followings={myFollowings}
                                     followUser={followUser}
                                     key={follow.follower.id}
@@ -202,6 +210,7 @@ const UserProfile = () => {
                               {followings.map((following: Following) => {
                                 return (
                                   <FollowingCard
+                                    followRequestsSent={followRequestsSent}
                                     followings={myFollowings}
                                     followUser={followUser}
                                     key={following.following.id}

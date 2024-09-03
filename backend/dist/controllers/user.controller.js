@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUser = exports.searchUsers = exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followUser = void 0;
+exports.followRequestAccept = exports.fetchFollowRequestsSent = exports.fetchFollowRequests = exports.fetchUser = exports.searchUsers = exports.editProfile = exports.fetchUsers = exports.fetchFollowing = exports.fetchFollowers = exports.followRequest = void 0;
 const __1 = require("..");
 const fetchUsers = async (req, res) => {
     try {
@@ -13,37 +13,158 @@ const fetchUsers = async (req, res) => {
     }
 };
 exports.fetchUsers = fetchUsers;
-const followUser = async (req, res) => {
+const followRequest = async (req, res) => {
     try {
-        const { followId } = req.body;
         const userId = req.userId;
-        // user Id (authenticated user  -> following followId user);
+        const { followId } = req.body;
         const follower = await __1.client.user.findUnique({ where: { id: userId } });
         const following = await __1.client.user.findUnique({ where: { id: followId } });
         if (!follower || !following || follower.id === following.id)
-            return res.status(400).json({ "success": false, "message": "Invalid follower and follwing id's" });
-        const isFollowing = await __1.client.following.findUnique({ where: { follower_id_following_id: { follower_id: follower.id, following_id: following.id } } });
-        let responseMsg = "";
-        let follow = true;
-        if (isFollowing) {
+            return res.status(400).json({ "success": false, "message": "user and following party not available" });
+        // if user is already followingg user with id:followId => remove follow and return response
+        const isFollow = await __1.client.following.findUnique({ where: { follower_id_following_id: {
+                    follower_id: follower.id,
+                    following_id: following.id,
+                } } });
+        if (isFollow) {
             // remove follow
-            await __1.client.following.delete({ where: { follower_id_following_id: { follower_id: isFollowing.follower_id, following_id: isFollowing.following_id } } });
-            responseMsg = `unfollowed ${following.username}`;
-            follow = false;
+            await __1.client.following.delete({ where: { follower_id_following_id: {
+                        follower_id: follower.id,
+                        following_id: following.id,
+                    } } });
+            return res.status(200).json({ "success": true, "message": "unfollowed user", "unfollowed": true, "isRequested": false });
+        }
+        // if there is already a request send to following from follower (Cancel request)
+        // else create follow request
+        let newRequest = null;
+        const requested = await __1.client.followRequests.findUnique({ where: { request_sender_id_request_receiver_id: {
+                    request_sender_id: follower.id,
+                    request_receiver_id: following.id,
+                } } });
+        let responseMsg = "";
+        let isRequested = false;
+        if (requested) {
+            // remove request
+            await __1.client.followRequests.delete({ where: { request_sender_id_request_receiver_id: {
+                        request_sender_id: requested.request_sender_id,
+                        request_receiver_id: requested.request_receiver_id,
+                    } } });
+            isRequested = false;
+            responseMsg = "cancelled follow request";
         }
         else {
-            await __1.client.following.create({ data: { follower_id: follower.id, following_id: following.id } });
-            responseMsg = `followed ${following.username}`;
-            follow = true;
+            // create request
+            newRequest = await __1.client.followRequests.create({ data: { request_sender_id: follower.id, request_receiver_id: following.id }, include: {
+                    request_receiver: {
+                        select: {
+                            id: true,
+                            email: true,
+                            username: true,
+                            user_image: true,
+                        }
+                    }
+                } });
+            isRequested = true;
+            responseMsg = "follow request sent";
         }
-        return res.status(200).json({ "success": true, "message": responseMsg, "isFollow": follow, following });
+        return res.status(200).json({ "success": true, "message": responseMsg, isRequested, "unfollowed": false, newRequest });
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ "success": false, "message": "Something went wrong when following" });
+        return res.status(500).json({ "success": false, "message": "Something went wrong when sending follow request" });
     }
 };
-exports.followUser = followUser;
+exports.followRequest = followRequest;
+const followRequestAccept = async (req, res) => {
+    try {
+        const { senderId } = req.body;
+        const userId = req.userId;
+        const receiver = await __1.client.user.findUnique({ where: { id: userId } });
+        const sender = await __1.client.user.findUnique({ where: { id: senderId } });
+        if (!receiver || !sender)
+            return res.status(400).json({ "success": false, "message": "receiver or sender not found" });
+        // before accepting a follow request => check if follow request from user with senderId exists . if exists => remove the request and create a follow (follower being the sender and following the receiver);
+        const request = await __1.client.followRequests.findUnique({ where: { request_sender_id_request_receiver_id: {
+                    request_sender_id: sender.id,
+                    request_receiver_id: receiver.id,
+                } } });
+        // if request doesnt exist () response (400)
+        if (!request)
+            return res.status(400).json({ "success": false, "message": "follow request doesn't exist" });
+        // create a follow from the sender to receiver .
+        const newFollow = await __1.client.following.create({ data: { follower_id: sender.id, following_id: receiver.id } });
+        // remove follow request
+        await __1.client.followRequests.delete({ where: { request_sender_id_request_receiver_id: {
+                    request_sender_id: sender.id,
+                    request_receiver_id: receiver.id,
+                } } });
+        return res.status(200).json({ "success": true, "message": "follow accepted" });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "something went wrong when accepting follow request" });
+    }
+};
+exports.followRequestAccept = followRequestAccept;
+const fetchFollowRequests = async (req, res) => {
+    try {
+        //get all requests directed to loggedin user.
+        const userId = req.userId;
+        const user = await __1.client.user.findUnique({ where: { id: userId } });
+        if (!user)
+            return res.status(400).json({ "success": false, "message": "user not available" });
+        const followRequests = await __1.client.user.findUnique({ where: { id: user.id }, include: {
+                _count: { select: { FollowRequestsReceived: true } },
+                FollowRequestsReceived: {
+                    select: {
+                        request_sender: {
+                            select: {
+                                id: true,
+                                email: true,
+                                username: true,
+                                user_image: true,
+                            }
+                        }
+                    },
+                },
+            } });
+        return res.status(200).json({ "success": true, "follow_requests": followRequests?.FollowRequestsReceived, "follow_requests_count": followRequests?._count.FollowRequestsReceived });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when fetching follow requests" });
+    }
+};
+exports.fetchFollowRequests = fetchFollowRequests;
+const fetchFollowRequestsSent = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const user = await __1.client.user.findUnique({ where: { id: userId } });
+        if (!user)
+            return res.status(400).json({ "success": false, "message": "user not available" });
+        const requestsSent = await __1.client.user.findUnique({ where: { id: user.id }, include: {
+                _count: { select: { FollowRequestsSent: true } },
+                FollowRequestsSent: {
+                    select: {
+                        request_receiver: {
+                            select: {
+                                id: true,
+                                email: true,
+                                username: true,
+                                user_image: true,
+                            }
+                        }
+                    }
+                }
+            } });
+        return res.status(200).json({ "success": true, "follow_requests_sent": requestsSent?.FollowRequestsSent, "follow_requests_sent_count": requestsSent?._count.FollowRequestsSent });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "something went wrong when fetching follow requests sent" });
+    }
+};
+exports.fetchFollowRequestsSent = fetchFollowRequestsSent;
 const fetchFollowers = async (req, res) => {
     try {
         const userId = req.query.userId || req.userId;

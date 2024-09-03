@@ -1,5 +1,5 @@
 import { AppContext } from "@/Context/AppContext";
-import { AppContextType, Follower, Following } from "@/types";
+import { AppContextType, Follower, Following, followUserResponse } from "@/types";
 import { useContext } from "react";
 import blankAvatarImg from "../assets/blankAvatarImg.png";
 import { useGetFollowers } from "@/hooks/useGetFollowers";
@@ -20,10 +20,14 @@ import FollowingCard from "@/components/FollowingCard";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { backendUrl } from "@/App";
+import { useFollowRequestsSent } from "@/hooks/useFollowRequestsSent";
+
+
 
 const Profile = () => {
   const { loggedInUser } = useContext(AppContext) as AppContextType;
   const {followersCount,isLoading: isFollowersLoading,followers} = useGetFollowers();
+  const {followRequestsSent,followRequestsSentCount,isLoading:isFollowRequestsSentLoading,setFollowRequestsSent,setFollowRequestsSentCount} = useFollowRequestsSent();
   const {followingCount,setFollowing,setFollowingCount,isLoading: isFollowingLoading,following: followings} = useGetFollowing();
   const {toast} = useToast();
 
@@ -39,21 +43,17 @@ const Profile = () => {
           withCredentials: true,
         }
       );
-      console.log(response);
-      if(response.data.isFollow) {
-        setFollowingCount((prev) => prev+1);
-        setFollowing((prevFollowing) => [...prevFollowing,{
-          following:{
-            email:response.data.following.email,
-            id:response.data.following.id,
-            user_image:response.data.following.user_image,
-            username:response.data.following.username,
-          }
-        }]);
-      } else {
+      const data = response.data as followUserResponse;
+      if(data.unfollowed) {
         setFollowingCount((prev) => prev-1);
-        const newFollowing = followings.filter((following:Following) => following.following.id!==followId);
-        setFollowing(newFollowing);
+        const newFollowings = followings.filter((following:Following) => following.following.id!==followId);
+        setFollowing(newFollowings);
+      } else if(data.isRequested) {
+        setFollowRequestsSentCount((prev) => prev+1);
+        setFollowRequestsSent((prev) => [...prev , {request_receiver:data.newRequest?.request_receiver!}]);
+      } else {
+        const newFollowRequestsSent = followRequestsSent.filter((followRequest) => followRequest.request_receiver.id!==followId);
+        setFollowRequestsSent(newFollowRequestsSent);
       }
     } catch (error) {
       console.log(error);
@@ -67,7 +67,7 @@ const Profile = () => {
 
   return (
     <>
-        <div className="flex flex-col border rounded-lg p-4 gap-2 mt-16">
+        <div className="flex flex-col border rounded-lg p-4 gap-2 mt-12">
           <div className="flex justify-between">
             <img
               className="rounded-full w-28 aspect-auto"
@@ -118,6 +118,7 @@ const Profile = () => {
                               {followers.map((follow: Follower) => {
                                 return (
                                   <FollowerCard
+                                    followRequestsSent={followRequestsSent}
                                     followings={followings}
                                     followUser={followUser}
                                     key={follow.follower.id}
@@ -160,6 +161,7 @@ const Profile = () => {
                               {followings.map((following: Following) => {
                                 return (
                                   <FollowingCard
+                                    followRequestsSent={followRequestsSent}
                                     followings={followings}
                                     followUser={followUser}
                                     key={following.following.id}

@@ -98,3 +98,38 @@ export type Comment = {
         }
     }
 }
+
+export type FollowRequests = {
+    request_sender:{
+        id:string;
+        email:string;
+        username:string;
+        user_image:string | null;
+    }
+}
+
+export type FollowRequestsSent = {
+    request_receiver:{
+        id:string;
+        email:string;
+        username:string;
+        user_image:string | null;
+    }
+}
+
+ export type followUserResponse = {
+    success:boolean;
+    message:string;
+    isRequested:boolean;
+    unfollowed:boolean;
+    newRequest:{
+        request_sender_id:string;
+        request_receiver_id:string;
+        request_receiver:{
+            id:string;
+            email:string;
+            username:string;
+            user_image:string | null;
+        };
+    } | null;
+}

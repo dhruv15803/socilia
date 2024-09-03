@@ -1,11 +1,14 @@
 
 import express from "express"
 import { authenticatedUser } from "../middlewares/auth.middleware";
-import { editProfile, fetchFollowers, fetchFollowing, fetchUser, fetchUsers, followUser, searchUsers } from "../controllers/user.controller";
+import { editProfile, fetchFollowers, fetchFollowing, fetchFollowRequests, fetchFollowRequestsSent, fetchUser, fetchUsers, followRequest, followRequestAccept, searchUsers } from "../controllers/user.controller";
 
 const router = express.Router();
 
-router.post("/follow",authenticatedUser,followUser);
+router.post("/follow",authenticatedUser,followRequest);
+router.get("/follow_requests",authenticatedUser,fetchFollowRequests);
+router.get("/follow_requests_sent",authenticatedUser,fetchFollowRequestsSent);
+router.post("/accept_follow_request",authenticatedUser,followRequestAccept);
 router.get("/followers",authenticatedUser,fetchFollowers);
 router.get('/following',authenticatedUser,fetchFollowing);
 router.get("/users",fetchUsers);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -25,7 +25,7 @@ const SearchUserSheet = () => {
     <>
       <Sheet>
         <SheetTrigger asChild>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer">
             <SearchIcon />
             <span className="font-semibold">search</span>
           </div>
