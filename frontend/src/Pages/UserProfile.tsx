@@ -104,7 +104,7 @@ const UserProfile = () => {
     const isRequested = followRequestsSent.some((followRequest) => followRequest.request_receiver.id===userId);
     setIsFollowing(isFollow);
     setIsRequested(isRequested);
-  }, [user, followers]);
+  }, [user, followers,followRequestsSent]);
 
   if (isLoading)
     return (
