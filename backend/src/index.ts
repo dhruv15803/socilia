@@ -9,7 +9,7 @@ import postRoutes from "./routes/post.route"
 import fileRoutes from "./routes/file.route"
 import userRoutes from "./routes/user.route";
 import commentRoutes from "./routes/comment.route";
-
+import messageRoutes from "./routes/message.route";
 
 const port = process.env.PORT;
 const app = express();
@@ -33,6 +33,7 @@ app.use("/api/post",postRoutes);
 app.use("/api/file",fileRoutes);
 app.use("/api/user",userRoutes);
 app.use("/api/comment",commentRoutes);
+app.use("/api/message",messageRoutes);
 
 app.listen(port, () => {
   console.log(`server running at http://localhost:${port}`);

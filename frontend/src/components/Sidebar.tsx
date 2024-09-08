@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/alert-dialog"  
 import { RxAvatar } from "react-icons/rx";  
 import NotificationsSheet from "./NotificationsSheet";
+import { FiMessageSquare } from "react-icons/fi";
+import MessagesSheet from "./MessagesSheet";
   
+
 const Sidebar = () => {  
   
   const { loggedInUser,setLoggedInUser} = useContext(AppContext) as AppContextType;  
@@ -50,10 +53,7 @@ const Sidebar = () => {
         <div className="flex flex-col gap-4">  
           <SearchUserSheet/>  
           <NotificationsSheet/>
-          <div onClick={() => navigate("/create")} className="flex items-center cursor-pointer gap-2">  
-           <button className="text-3xl"><CiSquarePlus/></button>           
-           <span className="font-semibold md:block hidden">Create Post</span>  
-          </div>  
+          <MessagesSheet/>
           <div onClick={() => navigate("/profile")} className="flex items-center border border-white gap-1 py-2 cursor-pointer hover:border hover:border-black hover:rounded-lg hover:px-4 hover:py-2 hover:duration-300">  
            {loggedInUser.user_image !== null ? (  
             <>  

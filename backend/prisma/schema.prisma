@@ -8,24 +8,28 @@ datasource db {
 }
 
 model User {
-  id                     String           @id @default(uuid())
-  username               String           @unique
-  email                  String           @unique
-  password               String
-  user_image             String?
-  firstName              String?
-  lastName               String?
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime?
-  bio_data               String?
-  Following              Following[]      @relation("follower_id")
-  Followers              Following[]      @relation("following_id")
-  Posts                  Post[]
-  Comment                Comment[]
-  PostLike               PostLike[]
-  CommentLike            CommentLike[]
-  FollowRequestsReceived FollowRequests[] @relation("request_receiver")
-  FollowRequestsSent     FollowRequests[] @relation("request_sender")
+  id                            String           @id @default(uuid())
+  username                      String           @unique
+  email                         String           @unique
+  password                      String
+  user_image                    String?
+  firstName                     String?
+  lastName                      String?
+  createdAt                     DateTime         @default(now())
+  updatedAt                     DateTime?
+  bio_data                      String?
+  Following                     Following[]      @relation("follower_id")
+  Followers                     Following[]      @relation("following_id")
+  Posts                         Post[]
+  Comment                       Comment[]
+  PostLike                      PostLike[]
+  CommentLike                   CommentLike[]
+  FollowRequestsReceived        FollowRequests[] @relation("request_receiver")
+  FollowRequestsSent            FollowRequests[] @relation("request_sender")
+  ConversationFirstParticipant  Conversation[]   @relation("first_participant")
+  ConversationSecondParticipant Conversation[]   @relation("second_participant")
+  MessagesSent                  Message[]        @relation("message_sender")
+  MessagesReceived              Message[]        @relation("message_receiver")
 }
 
 model Following {
@@ -88,4 +92,27 @@ model FollowRequests {
   request_receiver_id String
 
   @@unique([request_sender_id, request_receiver_id])
+}
+
+model Conversation {
+  id                    String    @id @default(uuid())
+  first_participant     User      @relation("first_participant", fields: [first_participant_id], references: [id])
+  first_participant_id  String
+  second_participant    User      @relation("second_participant", fields: [second_participant_id], references: [id])
+  second_participant_id String
+  Messages               Message[]
+}
+
+model Message {
+  id                  String       @id @default(uuid())
+  message_sender      User         @relation("message_sender", fields: [message_sender_id], references: [id])
+  message_sender_id   String
+  message_receiver    User         @relation("message_receiver", fields: [message_receiver_id], references: [id])
+  message_receiver_id String
+  message_text        String
+  conversation        Conversation @relation(fields: [conversation_id], references: [id])
+  conversation_id     String
+  message_images      String[]
+  message_created_at  DateTime     @default(now())
+  message_updated_at  DateTime?
 }

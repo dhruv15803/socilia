@@ -133,3 +133,14 @@ export type FollowRequestsSent = {
         };
     } | null;
 }
+
+export type Message = {
+    id:string;
+    message_sender_id:string;
+    message_receiver_id:string;
+    message_text:string;
+    conversation_id:string;
+    message_images:string[];
+    message_created_at:string;
+    message_updated_at:string | null;
+}
