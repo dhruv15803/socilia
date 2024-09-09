@@ -23,8 +23,10 @@ const fetchConversationMessages = async (req:Request,res:Response) => {
         // check if conversation with following participants exists.
         // if it exists return conversation messages. else return 400
         const conversation = await client.conversation.findFirst({where:{OR:[{first_participant_id:firstParticipant.id,second_participant_id:secondParticipant.id},{first_participant_id:secondParticipant.id,second_participant_id:firstParticipant.id}]},include:{
-            Messages:true,
-        }})
+            Messages:{
+                orderBy:{message_created_at:"asc"},
+            },
+        }});
         if(!conversation) return res.status(400).json({"success":false,"message":"No Conversation found"});
         return res.status(200).json({"success":true,"messages":conversation.Messages});
     } catch (error) {
@@ -87,7 +89,7 @@ const editMessage = async (req:Request,res:Response) => {
     
         if(message.message_sender_id!==sender.id) return res.status(400).json({"success":false,"message":"user is not sender of this message"});
     
-        const newMessage = await client.message.update({where:{id:message.id},data:{message_text:newMessageText.trim()}});
+        const newMessage = await client.message.update({where:{id:message.id},data:{message_text:newMessageText.trim(),message_updated_at:new Date(),is_edited:true}});
         return res.status(200).json({"success":true,newMessage,"message":"edited message"});
     } catch (error) {
         console.log(error);

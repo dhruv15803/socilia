@@ -97,7 +97,7 @@ const PostCommentsDialog = ({
         </DialogTrigger>
         <DialogContent className=" max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Comments</DialogTitle>
+            <DialogTitle>{commentCount} Comments</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <form

@@ -13,6 +13,7 @@ import LikedPosts from "./Pages/LikedPosts";
 import UserProfileLayout from "./Layouts/UserProfileLayout";
 import UserPosts from "./Pages/UserPosts";
 import UserLikedPosts from "./Pages/UserLikedPosts";
+import ChatWindow from "./Pages/ChatWindow";
 export const backendUrl = "http://localhost:5000";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
                   <Route index element={<MyPosts/>}/>
                   <Route path="liked_posts" element={<LikedPosts/>}/>
                 </Route>
+                <Route path="chat/:selectedId" element={<ChatWindow/>}/>
               </Route>
             </Route>
           </Routes>

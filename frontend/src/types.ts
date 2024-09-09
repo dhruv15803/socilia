@@ -143,4 +143,5 @@ export type Message = {
     message_images:string[];
     message_created_at:string;
     message_updated_at:string | null;
+    is_edited:boolean;
 }

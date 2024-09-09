@@ -113,6 +113,7 @@ model Message {
   conversation        Conversation @relation(fields: [conversation_id], references: [id])
   conversation_id     String
   message_images      String[]
+  is_edited           Boolean     @default(false)
   message_created_at  DateTime     @default(now())
   message_updated_at  DateTime?
 }

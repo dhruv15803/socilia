@@ -52,4 +52,4 @@ const MessagesSheet = () => {
   )
 }
 
-export default MessagesSheet
+export default MessagesSheet;
