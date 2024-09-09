@@ -9,4 +9,6 @@ const message_controller_1 = require("../controllers/message.controller");
 const router = express_1.default.Router();
 router.get("/messages/:selectedId", auth_middleware_1.authenticatedUser, message_controller_1.fetchConversationMessages);
 router.post("/create", auth_middleware_1.authenticatedUser, message_controller_1.createMessage);
+router.delete("/:messageId", auth_middleware_1.authenticatedUser, message_controller_1.removeMessage);
+router.put("/edit", auth_middleware_1.authenticatedUser, message_controller_1.editMessage);
 exports.default = router;

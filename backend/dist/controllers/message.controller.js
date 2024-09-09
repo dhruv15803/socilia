@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMessage = exports.fetchConversationMessages = void 0;
+exports.editMessage = exports.removeMessage = exports.createMessage = exports.fetchConversationMessages = void 0;
 const __1 = require("..");
 const fetchConversationMessages = async (req, res) => {
     try {
@@ -52,3 +52,41 @@ const createMessage = async (req, res) => {
     }
 };
 exports.createMessage = createMessage;
+const removeMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const userId = req.userId;
+        const sender = await __1.client.user.findUnique({ where: { id: userId } });
+        const message = await __1.client.message.findUnique({ where: { id: messageId } });
+        if (!sender || !message)
+            return res.status(400).json({ "success": false, "message": "message or message sender not available" });
+        // checking if sender of message is the logged in user 
+        if (message.message_sender_id !== sender.id)
+            return res.status(400).json({ "success": false, "message": "user not sender of this message" });
+        await __1.client.message.delete({ where: { id: message.id } });
+        return res.status(200).json({ "success": true, "message": "deleted message" });
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+exports.removeMessage = removeMessage;
+const editMessage = async (req, res) => {
+    try {
+        const { messageId, newMessageText } = req.body;
+        const userId = req.userId;
+        const sender = await __1.client.user.findUnique({ where: { id: userId } });
+        const message = await __1.client.message.findUnique({ where: { id: messageId } });
+        if (!sender || !message)
+            return res.status(400).json({ "success": false, "message": "sender or message not available" });
+        if (message.message_sender_id !== sender.id)
+            return res.status(400).json({ "success": false, "message": "user is not sender of this message" });
+        const newMessage = await __1.client.message.update({ where: { id: message.id }, data: { message_text: newMessageText.trim() } });
+        return res.status(200).json({ "success": true, newMessage, "message": "edited message" });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ "success": false, "message": "Something went wrong when editing message" });
+    }
+};
+exports.editMessage = editMessage;

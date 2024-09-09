@@ -58,7 +58,46 @@ const createMessage = async (req:Request,res:Response) => {
     }
 }
 
+
+const removeMessage = async (req:Request,res:Response) => {
+    try {
+        const {messageId} = req.params;
+        const userId = req.userId;
+        const sender = await client.user.findUnique({where:{id:userId}});
+        const message = await client.message.findUnique({where:{id:messageId}});
+        if(!sender || !message) return res.status(400).json({"success":false,"message":"message or message sender not available"});
+        // checking if sender of message is the logged in user 
+        if(message.message_sender_id!==sender.id) return res.status(400).json({"success":false,"message":"user not sender of this message"});
+        await client.message.delete({where:{id:message.id}});
+        return res.status(200).json({"success":true,"message":"deleted message"});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+const editMessage = async (req:Request,res:Response) => {
+    try {
+        const {messageId,newMessageText} = req.body;
+        const userId = req.userId;
+        const sender = await client.user.findUnique({where:{id:userId}});
+        const message = await client.message.findUnique({where:{id:messageId}});
+        if(!sender || !message) return res.status(400).json({"success":false,"message":"sender or message not available"});
+    
+        if(message.message_sender_id!==sender.id) return res.status(400).json({"success":false,"message":"user is not sender of this message"});
+    
+        const newMessage = await client.message.update({where:{id:message.id},data:{message_text:newMessageText.trim()}});
+        return res.status(200).json({"success":true,newMessage,"message":"edited message"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"Something went wrong when editing message"});
+    }
+}
+
 export {
     fetchConversationMessages,
     createMessage,
+    removeMessage,
+    editMessage,
 }

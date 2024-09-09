@@ -6,7 +6,6 @@ import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";  
 import { AppContextType } from "@/types";  
 import { Button } from "./ui/button";  
-import { CiSquarePlus } from "react-icons/ci";  
 import {  
   AlertDialog,  
   AlertDialogAction,  
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/alert-dialog"  
 import { RxAvatar } from "react-icons/rx";  
 import NotificationsSheet from "./NotificationsSheet";
-import { FiMessageSquare } from "react-icons/fi";
 import MessagesSheet from "./MessagesSheet";
   
 
@@ -42,7 +40,7 @@ const Sidebar = () => {
   
   return (  
    <>  
-    <aside className="w-fit h-full fixed left-0 overflow-y-auto bg-white border-r md:p-8 p-4">  
+    <aside className="fixed left-0 h-full overflow-y-auto bg-white border-r md:p-8 p-4">  
       <div className="flex flex-col gap-4">  
         <Link to="/">  
           {" "}  
