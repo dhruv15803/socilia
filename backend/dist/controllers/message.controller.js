@@ -46,6 +46,11 @@ const createMessage = async (req, res) => {
             const newConversation = await __1.client.conversation.create({ data: { first_participant_id: sender.id, second_participant_id: receiver.id } });
             newMessage = await __1.client.message.create({ data: { conversation_id: newConversation.id, message_sender_id: sender.id, message_receiver_id: receiver.id, message_text: message_text.trim() } });
         }
+        // SOCKET STUFF
+        const receiverSocketId = (0, __1.getSocketId)(receiver.id);
+        if (receiverSocketId) {
+            __1.io.to(receiverSocketId).emit("send_message", newMessage);
+        }
         return res.status(201).json({ "success": true, newMessage, "message": "message sent" });
     }
     catch (error) {
@@ -66,6 +71,11 @@ const removeMessage = async (req, res) => {
         if (message.message_sender_id !== sender.id)
             return res.status(400).json({ "success": false, "message": "user not sender of this message" });
         await __1.client.message.delete({ where: { id: message.id } });
+        // message => sender id , receiver_id . send event to receiver to delete the following message
+        const receiverSocketId = (0, __1.getSocketId)(message.message_receiver_id);
+        if (receiverSocketId) {
+            __1.io.to(receiverSocketId).emit("remove_message", message);
+        }
         return res.status(200).json({ "success": true, "message": "deleted message" });
     }
     catch (error) {
@@ -84,6 +94,11 @@ const editMessage = async (req, res) => {
         if (message.message_sender_id !== sender.id)
             return res.status(400).json({ "success": false, "message": "user is not sender of this message" });
         const newMessage = await __1.client.message.update({ where: { id: message.id }, data: { message_text: newMessageText.trim(), message_updated_at: new Date(), is_edited: true } });
+        // emit event to receiver of this message to update the message 
+        const receiverSocketId = (0, __1.getSocketId)(message.message_receiver_id);
+        if (receiverSocketId) {
+            __1.io.to(receiverSocketId).emit("edit_message", newMessage);
+        }
         return res.status(200).json({ "success": true, newMessage, "message": "edited message" });
     }
     catch (error) {

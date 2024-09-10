@@ -10,9 +10,20 @@ import fileRoutes from "./routes/file.route"
 import userRoutes from "./routes/user.route";
 import commentRoutes from "./routes/comment.route";
 import messageRoutes from "./routes/message.route";
+import { Server, Socket } from "socket.io";
+import http from "http"
+
 
 const port = process.env.PORT;
 const app = express();
+const server = http.createServer(app);
+
+export const io = new Server(server , {
+  cors:{
+    origin:process.env.CLIENT_URL,
+    credentials:true,
+  }
+});
 
 //  middlewares
 app.use(express.json());
@@ -35,6 +46,30 @@ app.use("/api/user",userRoutes);
 app.use("/api/comment",commentRoutes);
 app.use("/api/message",messageRoutes);
 
-app.listen(port, () => {
+// io stuff here 
+
+const userSocketMap = new Map<string,string>();
+
+export const getSocketId = (userId:string) => {
+  return userSocketMap.get(userId);
+}
+
+io.on("connection" , (socket) => {
+  console.log(`User connected with id ${socket.id}`);
+  const userId = socket.handshake.query.userId as string;
+  if(userId!=undefined) {
+    userSocketMap.set(userId , socket.id);
+  }
+  console.log(userSocketMap);
+  console.log(Array.from(userSocketMap.keys()));
+  io.emit("getOnlineUsers",Array.from(userSocketMap.keys()));
+  socket.on("disconnect",() => {
+    console.log('user disconnected with id ' , socket.id);
+    userSocketMap.delete(userId);
+    io.emit("getOnlineUsers",Array.from(userSocketMap.keys()));
+  });
+})
+
+server.listen(port,() => {
   console.log(`server running at http://localhost:${port}`);
 });

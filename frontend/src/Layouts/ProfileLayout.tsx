@@ -6,7 +6,7 @@ const ProfileLayout = () => {
   return (
     <>
       <div className="flex my-10 flex-col mx-10 md:mx-[20%] lg:mx-[25%] xl:mx-[30%] ">
-        <Profile />
+        <Profile /> 
         <div className="text-xl flex items-center gap-4 p-2 my-2 border-b">
           <NavLink
             end

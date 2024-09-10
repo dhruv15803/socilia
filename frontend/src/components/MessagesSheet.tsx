@@ -1,4 +1,3 @@
-import React from 'react'
 import {
     Sheet,
     SheetContent,
@@ -10,13 +9,10 @@ import {
 import { useGetFollowing } from '@/hooks/useGetFollowing';
 import { FiMessageSquare } from 'react-icons/fi';
 import Loader from './Loader';
-import { RxAvatar } from 'react-icons/rx';
-import { useNavigate } from 'react-router-dom';
+import MessageUserCard from './MessageUserCard';
 
 const MessagesSheet = () => {
-    const navigate = useNavigate();
     const {following:followings,isLoading:isFollowingLoading} = useGetFollowing();
-
 
   return (
     <>
@@ -39,10 +35,7 @@ const MessagesSheet = () => {
                 </> : <>
                     <div className='flex flex-col gap-4'>
                         {followings.map((following) => {
-                            return <div onClick={() => navigate(`/chat/${following.following.id}`)} key={following.following.id} className='cursor-pointer flex gap-2 p-2 hover:bg-gray-100 hover:duration-300'>
-                                {following.following.user_image!==null ? <><img src={following.following.user_image} alt="" /></> : <><button className='text-3xl'><RxAvatar/></button></>}
-                                <span className='text-xl font-semibold'>{following.following.username}</span>
-                            </div>
+                            return <MessageUserCard user={following.following} key={following.following.id} />
                         })}
                     </div>
                 </>}

@@ -1,4 +1,5 @@
 import { SetStateAction } from "react";
+import { Socket } from "socket.io-client";
 
 export type AppContextType = {
     loggedInUser:User | null;
@@ -144,4 +145,9 @@ export type Message = {
     message_created_at:string;
     message_updated_at:string | null;
     is_edited:boolean;
+}
+
+export type SocketContextType = {
+    socket:Socket | null;
+    onlineUsers:string[];
 }

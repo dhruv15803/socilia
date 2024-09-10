@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import { formatMessageDate, postCreatedAt } from '@/utils';
 
 type Props = {
     message: Message;
@@ -29,9 +30,9 @@ const MessageCard = ({ message, removeMessage, editMessage }: Props) => {
 
     return (
         <>
-            <div className={`flex flex-col p-4 gap-2 border rounded-lg ${message.message_sender_id === loggedInUser?.id ? "bg-blue-500 text-white" : "bg-gray-100"}`}>
-                <div className='flex items-center justify-between'>
-                    {message.is_edited && <span className='text-gray-300'>edited</span>}
+            <div className={`flex flex-col pt-2 px-2 gap-2 border rounded-lg ${message.message_sender_id === loggedInUser?.id ? "bg-blue-500 text-white" : "bg-gray-100"}`}>
+                <div className='flex items-center justify-end gap-2'>
+                    {message.is_edited && <span>edited</span>}
                     {message.message_sender_id === loggedInUser?.id && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -49,6 +50,10 @@ const MessageCard = ({ message, removeMessage, editMessage }: Props) => {
                     )}
                 </div>
                 <div className='flex flex-wrap'>{message.message_text}</div>
+                <div className='flex my-2 items-center border-t justify-between gap-4'>
+                    <div>{postCreatedAt(message.message_created_at)}</div>
+                    <div>{formatMessageDate(message.message_created_at)}</div>
+                </div>
             </div>
 
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -74,4 +79,4 @@ const MessageCard = ({ message, removeMessage, editMessage }: Props) => {
     )
 }
 
-export default MessageCard
+export default MessageCard;

@@ -14,12 +14,15 @@ import UserProfileLayout from "./Layouts/UserProfileLayout";
 import UserPosts from "./Pages/UserPosts";
 import UserLikedPosts from "./Pages/UserLikedPosts";
 import ChatWindow from "./Pages/ChatWindow";
+import {io} from "socket.io-client"
+import SocketContextProvider from "./Context/SocketContext";
 export const backendUrl = "http://localhost:5000";
 
 function App() {
   return (
     <>
       <AppContextProvider>
+        <SocketContextProvider>
         <Router>
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -42,6 +45,7 @@ function App() {
             </Route>
           </Routes>
         </Router>
+        </SocketContextProvider>
       </AppContextProvider>
     </>
   );
