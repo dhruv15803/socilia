@@ -1,6 +1,6 @@
-import { AppContextType, Post } from "@/types";
+import { AppContextType, Post, SocketContextType } from "@/types";
 import { postCreatedAt } from "@/utils";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { RxAvatar } from "react-icons/rx";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
@@ -12,6 +12,7 @@ import { AppContext } from "@/Context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { SocketContext } from "@/Context/SocketContext";
 
 type Props = {
   post: Post;
@@ -45,9 +46,7 @@ const PostCard = ({ post,onRemovePost}: Props) => {
         }
       );
       setIsPostLiked(response.data.isLiked);
-      response.data.isLiked
-        ? setPostLikesCount((prev) => prev + 1)
-        : setPostLikesCount((prev) => prev - 1);
+      response.data.isLiked ? setPostLikesCount((prev) => prev+1) : setPostLikesCount((prev) => prev-1);
     } catch (error) {
       console.log(error);
       toast({
@@ -71,8 +70,6 @@ const PostCard = ({ post,onRemovePost}: Props) => {
       setIsRemovingPost(false);
     }
   }
-
-
 
   return (
     <>

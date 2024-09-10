@@ -24,10 +24,16 @@ const UserLikedPosts = () => {
   return (
     <>
       <div className='flex flex-col gap-4'>
-        {likedPosts.map((post:Post) => {
+        {likedPosts.length!==0 ? <>
+          {likedPosts.map((post:Post) => {
           return <PostCard post={post} key={post.id}/>
         })}
-        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
+        </> : <>
+          <div className='flex items-center justify-center'>
+            No Liked posts available
+          </div>
+        </>}
+        {noOfPages > 1 && <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>}
       </div>
     </>
   )

@@ -8,12 +8,13 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import { AiFillLike } from "react-icons/ai";
 import { AppContext } from "@/Context/AppContext";
-import { AppContextType } from "@/types";
+import { AppContextType, SocketContextType } from "@/types";
 import { backendUrl } from "@/App";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import PostLikesDialogBox from "@/components/PostLikesDialogBox";
 import PostCommentsDialog from "@/components/PostCommentsDialog";
+import { SocketContext } from "@/Context/SocketContext";
 
 const PostDetail = () => {
   const { toast } = useToast();
@@ -38,9 +39,7 @@ const PostDetail = () => {
         }
       );
       setIsPostLiked(response.data.isLiked);
-      response.data.isLiked
-        ? setPostLikesCount((prev) => prev + 1)
-        : setPostLikesCount((prev) => prev - 1);
+      response.data.isLiked ? setPostLikesCount((prev) => prev+1) : setPostLikesCount((prev) => prev-1);
     } catch (error) {
       console.log(error);
       toast({

@@ -85,6 +85,7 @@ const likePost = async (req, res) => {
             responseMsg = "added like on post";
             isLiked = true;
         }
+        // emit to all sockets that a particular post has been liked
         return res.status(200).json({ "success": true, "message": responseMsg, isLiked });
     }
     catch (error) {

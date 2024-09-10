@@ -29,10 +29,14 @@ const Home = () => {
   return (
     <>
     <div className='flex my-12 flex-col gap-4 mx-8 md:mx-[20%] lg:mx-[25%] xl:mx-[35%]'>
-        {posts.map((post) => {
+        {posts.length!==0 ? <>
+            {posts.map((post) => {
             return <PostCard onRemovePost={handleRemovePost} key={post.id} post={post}/>
         })}
-        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
+        </> : <>
+            <div className='flex items-center justify-center'>No Posts available</div>
+        </>} 
+        {noOfPages > 1 && <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>}
     </div>
     </>
   )

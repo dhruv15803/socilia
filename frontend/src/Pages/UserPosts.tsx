@@ -28,10 +28,16 @@ const UserPosts = () => {
   return (
     <>
       <div className='flex flex-col gap-4'>
-        {posts.map((post:Post) => {
+        {posts.length!==0  ? <>
+          {posts.map((post:Post) => {
           return <PostCard key={post.id} post={post}/>
         })}
-        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
+        </> : <>
+          <div className='flex items-center justify-center'>
+            No posts available
+          </div>
+        </>}
+        {noOfPages > 1 && <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>}
       </div>
     </>
   )

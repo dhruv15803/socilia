@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { client } from "..";
+import { client, io } from "..";
 
 
 type createPostRequestBody = {
@@ -88,6 +88,9 @@ const likePost = async (req:Request,res:Response) => {
             responseMsg="added like on post";
             isLiked = true;
         }
+
+        // emit to all sockets that a particular post has been liked
+
         return res.status(200).json({"success":true,"message":responseMsg,isLiked});
     } catch (error) {
         console.log(error);

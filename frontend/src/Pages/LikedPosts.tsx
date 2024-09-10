@@ -29,10 +29,16 @@ const LikedPosts = () => {
     return (
     <>
     <div className='flex flex-col gap-4'>
-        {likedPosts.map((post) => {
+        {likedPosts.length!==0 ? <>
+            {likedPosts.map((post) => {
             return <PostCard onRemovePost={handleRemovePost} key={post.id} post={post}/>
         })}
-        <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>
+        </> : <>
+            <div className='flex items-center justify-center'>
+                No Liked posts available
+            </div>
+        </>}
+        {noOfPages > 1 && <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>}
     </div>
     </>
   )
