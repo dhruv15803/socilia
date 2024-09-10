@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 
 export const useAuthUser = () => {
     const [loggedInUser,setLoggedInUser] = useState<User | null>(null);
-    const [isLoading,setIsLoading] = useState<boolean>(false);
+    const [isLoading,setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchUser = async () => {

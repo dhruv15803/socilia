@@ -4,10 +4,23 @@ import LoginByUsername from "@/components/LoginByUsername";
 import { AppContext } from "@/Context/AppContext";
 import { AppContextType } from "@/types";
 import { Navigate } from "react-router-dom";
+import Loader from "@/components/Loader";
 
 const Login = () => {
-  const {loggedInUser} = useContext(AppContext) as AppContextType;
+  const {loggedInUser,isLoading} = useContext(AppContext) as AppContextType;
+  if(isLoading) {
+    return (
+      <>
+        <div className="flex items-center justify-center">
+          <Loader width="80" height="80" color="black"/>
+          <span className="font-semibold">Loading...</span>
+        </div>
+      </>
+    )
+  }
+
   if(loggedInUser) return <Navigate to="/"/>
+  
   const [isLoginByEmail, setIsLoginByEmail] = useState<boolean>(true);
 
   return (

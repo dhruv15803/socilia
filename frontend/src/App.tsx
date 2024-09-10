@@ -14,7 +14,6 @@ import UserProfileLayout from "./Layouts/UserProfileLayout";
 import UserPosts from "./Pages/UserPosts";
 import UserLikedPosts from "./Pages/UserLikedPosts";
 import ChatWindow from "./Pages/ChatWindow";
-import {io} from "socket.io-client"
 import SocketContextProvider from "./Context/SocketContext";
 export const backendUrl = "http://localhost:5000";
 
@@ -30,7 +29,7 @@ function App() {
               <Route path="register" element={<Register />} />
               <Route path="/" element={<ProtectedRoute />}>
                 <Route index element={<Home/>} />
-                <Route path="/create" element={<CreatePost />} />
+                <Route path="/create" element={<CreatePost/>} />
                 <Route path="/post/:postId" element={<PostDetail/>}/>
                 <Route path="/profile" element={<UserProfileLayout/>}>
                   <Route path=":userId" element={<UserPosts/>}/>

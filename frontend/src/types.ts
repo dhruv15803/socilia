@@ -4,6 +4,7 @@ import { Socket } from "socket.io-client";
 export type AppContextType = {
     loggedInUser:User | null;
     setLoggedInUser:React.Dispatch<SetStateAction<User | null>>;
+    isLoading:boolean;
 }
 
 
