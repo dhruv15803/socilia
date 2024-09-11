@@ -31,7 +31,7 @@ const Profile = () => {
   const {followingCount,setFollowing,setFollowingCount,isLoading: isFollowingLoading,following: followings} = useGetFollowing();
   const {toast} = useToast();
 
-
+  
   const followUser = async (followId: string) => {
     try {
       const response = await axios.post(

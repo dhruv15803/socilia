@@ -7,12 +7,15 @@ import { AppContext } from '@/Context/AppContext';
 import { SocketContext } from '@/Context/SocketContext';
 import { useConversation } from '@/hooks/useConversation';
 import { useGetUser } from '@/hooks/useGetUser';
-import { AppContextType, Message, SocketContextType } from '@/types';
+import { AppContextType, Message, sendMessageBody, SocketContextType } from '@/types';
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react'
-import { BsThreeDots } from 'react-icons/bs';
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import {  BsThreeDots } from 'react-icons/bs';
 import { RxAvatar } from 'react-icons/rx';
 import { useParams } from 'react-router-dom'
+import { RxCross2 } from "react-icons/rx";
+
+
 
 
 
@@ -23,8 +26,10 @@ const ChatWindow = () => {
     const {isMessagesLoading,messages,setMessages} = useConversation(selectedId!);
     const [messageText,setMessageText] = useState<string>("");
     const [isSendingMessage,setIsSendingMessage] = useState<boolean>(false);
+    const [replyMessage,setReplyMessage] = useState<Message | null>(null);
+    const messageFormRef = useRef<HTMLFormElement>(null);
     const {socket} = useContext(SocketContext) as SocketContextType;
-
+    
     const removeMessage = async (messageId:string) => {
         const prevMessages = messages;
         try {
@@ -69,21 +74,27 @@ const ChatWindow = () => {
 
     const handleSendMessage = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        let sendMessageRequestBody = replyMessage!==null ? {"receiver_id":selectedUser?.id,"message_text":messageText,"reply_message_id":replyMessage?.id} : {"receiver_id":selectedUser?.id,"message_text":messageText} 
         try {
             setIsSendingMessage(true);
-            const response = await axios.post(`${backendUrl}/api/message/create`,{
-                "receiver_id":selectedUser?.id,
-                "message_text":messageText,
-            },{
+            const response = await axios.post(`${backendUrl}/api/message/create`,sendMessageRequestBody,{
                 withCredentials:true,
             });
             setMessageText("");
+            setReplyMessage(null);
             setMessages((prevMessages) => [...prevMessages ,response.data.newMessage]);
         } catch (error) {
             console.log(error);
         } finally {
         }
         setIsSendingMessage(false);
+    }
+
+    const handleMessageReply = (reply_message:Message) => {
+        setReplyMessage(reply_message);
+        if(messageFormRef.current) {
+            messageFormRef.current.scrollIntoView({behavior:"smooth"});
+        }
     }
 
     useEffect(() => {
@@ -144,18 +155,27 @@ const ChatWindow = () => {
                     {messages?.map((message) => {
                         if(message.message_sender_id===loggedInUser?.id) {
                             return <div key={message.id} className='flex items-center justify-end'>
-                                <MessageCard editMessage={editMessage} removeMessage={removeMessage} message={message}/>
+                                <MessageCard onMessageReply={handleMessageReply} editMessage={editMessage} removeMessage={removeMessage} message={message}/>
                             </div>
                         } else {
                             return <div key={message.id} className='flex items-center justify-start'>
-                                <MessageCard editMessage={editMessage} removeMessage={removeMessage} message={message}/>
+                                <MessageCard onMessageReply={handleMessageReply} editMessage={editMessage} removeMessage={removeMessage} message={message}/>
                             </div>
                         }
                     })}
                 </>}
-                <form className='flex items-center gap-4' onSubmit={(e) => handleSendMessage(e)}>
-                    <Input value={messageText} onChange={(e) => setMessageText(e.target.value)} type='text' placeholder='Enter Message'/>
-                    <Button disabled={isSendingMessage || messageText.trim()===""}>Send</Button>
+                {replyMessage!==null && <div className='flex flex-col gap-2'>
+                        <div className='text-gray-500'>Replying to</div>
+                        <div className={`flex items-center justify-between border p-4 rounded-lg ${loggedInUser?.id===replyMessage.message_sender_id ? "bg-blue-500 text-white" : "bg-gray-100"} `}>
+                            <div className='flex flex-wrap w-[80%]'>{replyMessage.message_text}</div>
+                            <button onClick={() => setReplyMessage(null)} className='text-3xl'><RxCross2/></button>
+                        </div>
+                    </div>}
+                <form ref={messageFormRef} className='flex flex-col justify-center gap-4' onSubmit={(e) => handleSendMessage(e)}>
+                    <div className='flex items-center gap-4'>
+                        <Input value={messageText} onChange={(e) => setMessageText(e.target.value)} type='text' placeholder='Enter Message'/>
+                        <Button disabled={isSendingMessage || messageText.trim()===""}>Send</Button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -163,4 +183,4 @@ const ChatWindow = () => {
   )
 }
 
-export default ChatWindow
+export default ChatWindow;

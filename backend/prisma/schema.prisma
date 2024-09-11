@@ -100,7 +100,7 @@ model Conversation {
   first_participant_id  String
   second_participant    User      @relation("second_participant", fields: [second_participant_id], references: [id])
   second_participant_id String
-  Messages               Message[]
+  Messages              Message[]
 }
 
 model Message {
@@ -113,7 +113,10 @@ model Message {
   conversation        Conversation @relation(fields: [conversation_id], references: [id])
   conversation_id     String
   message_images      String[]
-  is_edited           Boolean     @default(false)
+  reply_message       Message?     @relation("reply_message_id", fields: [reply_message_id], references: [id])
+  reply_message_id    String?
+  is_edited           Boolean      @default(false)
   message_created_at  DateTime     @default(now())
   message_updated_at  DateTime?
+  replies             Message[]     @relation("reply_message_id")
 }

@@ -46,7 +46,6 @@ export type Post = {
             email:string;
         }
     }[];
-
 }
 
 export type Following = {
@@ -145,10 +144,30 @@ export type Message = {
     message_images:string[];
     message_created_at:string;
     message_updated_at:string | null;
+    reply_message_id:string | null;
     is_edited:boolean;
-}
+    reply_message:{
+            id: string;
+            message_sender_id: string;
+            message_receiver_id: string;
+            message_text: string;
+            conversation_id: string;
+            message_images: string[];
+            reply_message_id: string | null;
+            is_edited: boolean;
+            message_created_at: Date;
+            message_updated_at: Date | null;
+        } | null;
+    }
+
 
 export type SocketContextType = {
     socket:Socket | null;
     onlineUsers:string[];
+}
+
+export type sendMessageBody = {
+    "receiver_id":string;
+    "message_text":string;
+    "reply_message_id"?:string;
 }

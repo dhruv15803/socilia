@@ -11,4 +11,5 @@ router.get("/messages/:selectedId", auth_middleware_1.authenticatedUser, message
 router.post("/create", auth_middleware_1.authenticatedUser, message_controller_1.createMessage);
 router.delete("/:messageId", auth_middleware_1.authenticatedUser, message_controller_1.removeMessage);
 router.put("/edit", auth_middleware_1.authenticatedUser, message_controller_1.editMessage);
+router.get("/replies/:message_id", message_controller_1.fetchMessageReplies);
 exports.default = router;

@@ -8,9 +8,24 @@ type Message = {
     message_text: string;
     conversation_id: string;
     message_images: string[];
+    reply_message_id: string | null;
+    is_edited: boolean;
     message_created_at: Date;
     message_updated_at: Date | null;
-};
+    reply_message: {
+        id: string;
+        message_sender_id: string;
+        message_receiver_id: string;
+        message_text: string;
+        conversation_id: string;
+        message_images: string[];
+        reply_message_id: string | null;
+        is_edited: boolean;
+        message_created_at: Date;
+        message_updated_at: Date | null;
+    } | null;
+} | null;
+
 
 const fetchConversationMessages = async (req:Request,res:Response) => {
     try {
@@ -25,6 +40,9 @@ const fetchConversationMessages = async (req:Request,res:Response) => {
         const conversation = await client.conversation.findFirst({where:{OR:[{first_participant_id:firstParticipant.id,second_participant_id:secondParticipant.id},{first_participant_id:secondParticipant.id,second_participant_id:firstParticipant.id}]},include:{
             Messages:{
                 orderBy:{message_created_at:"asc"},
+                include:{
+                    reply_message:true,
+                }
             },
         }});
         if(!conversation) return res.status(400).json({"success":false,"message":"No Conversation found"});
@@ -35,9 +53,15 @@ const fetchConversationMessages = async (req:Request,res:Response) => {
     }
 }
 
+type createMessageRequestBody = {
+    receiver_id:string;
+    message_text:string;
+    reply_message_id?:string;
+}
+
 const createMessage = async (req:Request,res:Response) => {
     try {
-        const {receiver_id,message_text} = req.body
+        const {receiver_id,message_text,reply_message_id} = req.body as createMessageRequestBody;
         const sender_id = req.userId;
         const sender = await client.user.findUnique({where:{id:sender_id}});
         const receiver = await client.user.findUnique({where:{id:receiver_id}});
@@ -48,10 +72,14 @@ const createMessage = async (req:Request,res:Response) => {
         const conversation = await client.conversation.findFirst({where:{OR:[{first_participant_id:sender.id,second_participant_id:receiver.id},{first_participant_id:receiver.id,second_participant_id:sender.id}]}});
         let newMessage:Message;
         if(conversation) {
-            newMessage = await client.message.create({data:{conversation_id:conversation.id,message_sender_id:sender.id,message_receiver_id:receiver.id,message_text:message_text.trim()}});
+            newMessage = await client.message.create({data:{conversation_id:conversation.id,message_sender_id:sender.id,message_receiver_id:receiver.id,message_text:message_text.trim() , reply_message_id:reply_message_id}, include:{
+                reply_message:true,
+            }});
         } else {
             const newConversation = await client.conversation.create({data:{first_participant_id:sender.id,second_participant_id:receiver.id}});
-            newMessage = await client.message.create({data:{conversation_id:newConversation.id,message_sender_id:sender.id,message_receiver_id:receiver.id,message_text:message_text.trim()}});
+            newMessage = await client.message.create({data:{conversation_id:newConversation.id,message_sender_id:sender.id,message_receiver_id:receiver.id,message_text:message_text.trim(),reply_message_id:reply_message_id},include:{
+                reply_message:true,
+            }});
         }
 
         // SOCKET STUFF
@@ -101,7 +129,9 @@ const editMessage = async (req:Request,res:Response) => {
     
         if(message.message_sender_id!==sender.id) return res.status(400).json({"success":false,"message":"user is not sender of this message"});
     
-        const newMessage = await client.message.update({where:{id:message.id},data:{message_text:newMessageText.trim(),message_updated_at:new Date(),is_edited:true}});
+        const newMessage = await client.message.update({where:{id:message.id},data:{message_text:newMessageText.trim(),message_updated_at:new Date(),is_edited:true},include:{
+            reply_message:true,
+        }});
         
         // emit event to receiver of this message to update the message 
         const receiverSocketId = getSocketId(message.message_receiver_id);
@@ -116,9 +146,28 @@ const editMessage = async (req:Request,res:Response) => {
     }
 }
 
+const fetchMessageReplies = async (req:Request,res:Response) => {
+    try {
+        const {message_id} = req.params;
+        const message = await client.message.findUnique({where:{id:message_id},include:{
+            replies:{
+                include:{
+                    reply_message:true,
+                }
+            }
+        }});
+        if(!message) return res.status(400).json({"success":false,"message":"message not found"});
+        return res.status(200).json({"success":true,"replies":message.replies});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({"success":false,"message":"something went wrong when fetching message replies"});
+    }
+}
+
 export {
     fetchConversationMessages,
     createMessage,
     removeMessage,
     editMessage,
+    fetchMessageReplies,
 }
