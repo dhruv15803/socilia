@@ -19,7 +19,7 @@ export const usePosts = (page=1,limit=10) => {
                 setIsLoading(true);
                 const response = await axios.get(`${backendUrl}/api/post/posts?${params.toString()}`);
                 console.log(response);
-                setPosts(response.data.posts);
+                setPosts((prevPosts) => [...prevPosts,...response.data.posts]);
                 setNoOfPages(response.data.noOfPages);
             } catch (error) {
                 console.log(error);

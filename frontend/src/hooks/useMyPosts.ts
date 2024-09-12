@@ -23,7 +23,7 @@ export const useMyPosts = (userId?:string,page=1,limit=10) => {
                 const response = await axios.get(`${backendUrl}/api/post/my_posts?${params.toString()}`,{
                     withCredentials:true,
                 });
-                setPosts(response.data.posts);
+                setPosts((prevPosts) => [...prevPosts,...response.data.posts]);
                 setNoOfPages(response.data.noOfPages);
             } catch (error) {
                 console.log(error);

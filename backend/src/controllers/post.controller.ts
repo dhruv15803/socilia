@@ -164,6 +164,7 @@ const fetchMyPosts = async (req:Request,res:Response) => {
                 }
             }
         },
+        orderBy:{createdAt:"desc"},
         skip:skip,
         take:limit,
     });
@@ -208,7 +209,7 @@ const fetchLikedPosts = async (req:Request,res:Response) => {
                     }
                 }
             }
-        },skip:skip,take:limit});
+        },skip:skip,take:limit,orderBy:{createdAt:"desc"}});
         const total = await client.post.count({where:{PostLike:{some:{liked_by_id:user.id}}}});
         return res.status(200).json({"success":true,liked_posts,"noOfPages":Math.ceil(total/limit)});
     } catch (error) {

@@ -1,15 +1,29 @@
 import Loader from '@/components/Loader';
-import Pagination from '@/components/Pagination';
 import PostCard from '@/components/PostCard';
+import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/usePosts'
 import { Post } from '@/types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const POSTS_LIMIT = 10;
+const POSTS_LIMIT = 5;
 
 const Home = () => {
     const [page,setPage] = useState<number>(1);
     const {posts,isLoading,noOfPages,setPosts} = usePosts(page,POSTS_LIMIT);
+    const lastPostRef = useRef<HTMLDivElement>(null);
+
+
+    const handleRemovePost = (postId:string) => {
+        const newPosts = posts.filter((post:Post) => post.id!==postId);
+        setPosts(newPosts);
+    }
+
+    useEffect(() => {
+        if(page > 1 && lastPostRef.current) {
+            lastPostRef.current.scrollIntoView({behavior:"smooth"});
+        }
+    },[page])
+
 
     if(isLoading) return (
         <>
@@ -20,23 +34,21 @@ const Home = () => {
         </>
     )
 
-
-    const handleRemovePost = (postId:string) => {
-        const newPosts = posts.filter((post:Post) => post.id!==postId);
-        setPosts(newPosts);
-    }
-
   return (
     <>
     <div className='flex my-12 flex-col gap-4 mx-8 md:mx-[20%] lg:mx-[25%] xl:mx-[35%]'>
         {posts.length!==0 ? <>
-            {posts.map((post) => {
-            return <PostCard onRemovePost={handleRemovePost} key={post.id} post={post}/>
-        })}
+            {posts.map((post:Post,index:number) => {
+                return <div key={post.id} ref={index===posts.length-1 ? lastPostRef:null}>
+                    <PostCard post={post} onRemovePost={handleRemovePost}/>
+                    {(index===posts.length-1 && page < noOfPages) && <div className='flex justify-center mt-4'>
+                        <Button onClick={() => setPage((prev)=>prev+1)}>{isLoading ? "Loading...":"Load more"}</Button>
+                    </div>}
+                </div>
+            })}
         </> : <>
             <div className='flex items-center justify-center'>No Posts available</div>
         </>} 
-        {noOfPages > 1 && <Pagination noOfPages={noOfPages} pageNum={page} setPageNum={setPage}/>}
     </div>
     </>
   )

@@ -20,7 +20,7 @@ export const useLikedPosts = (userId?:string,page=1,limit=10) => {
                 const response = await axios.get(`${backendUrl}/api/post/liked_posts?${params.toString()}`,{
                     withCredentials:true,
                 });
-                setLikedPosts(response.data.liked_posts);
+                setLikedPosts((prevLikedPosts) => [...prevLikedPosts,...response.data.liked_posts]);
                 setNoOfPages(response.data.noOfPages);
             } catch (error) {
                 console.log(error);
