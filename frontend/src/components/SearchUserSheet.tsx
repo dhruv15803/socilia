@@ -26,8 +26,8 @@ const SearchUserSheet = () => {
       <Sheet>
         <SheetTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer">
-            <SearchIcon />
-            <span className="font-semibold">search</span>
+            <button className="text-3xl"><SearchIcon/></button>
+            <span className="font-semibold hidden md:inline">search</span>
           </div>
         </SheetTrigger>
         <SheetContent side={"left"}>

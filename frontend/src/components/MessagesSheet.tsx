@@ -19,8 +19,8 @@ const MessagesSheet = () => {
         <Sheet>
             <SheetTrigger asChild>
                 <div className="flex items-center gap-4 cursor-pointer">
-                    <button className="text-xl"><FiMessageSquare/></button>
-                    <span className="font-semibold">Messages</span>
+                    <button className="text-3xl"><FiMessageSquare/></button>
+                    <span className="font-semibold hidden md:inline">Messages</span>
                 </div>
             </SheetTrigger>
             <SheetContent side={"left"}>

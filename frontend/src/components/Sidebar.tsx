@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";
 import { AppContextType } from "@/types";
 import { Button } from "./ui/button";
+import { CiLogout } from "react-icons/ci";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +22,7 @@ import { RxAvatar } from "react-icons/rx";
 import NotificationsSheet from "./NotificationsSheet";
 import MessagesSheet from "./MessagesSheet";
 import { CiSquarePlus } from "react-icons/ci";
+import { useFollowRequests } from "@/hooks/useFollowRequests";
 
 const Sidebar = () => {
   const { loggedInUser, setLoggedInUser } = useContext(AppContext) as AppContextType;
@@ -38,7 +40,7 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 overflow-y-auto bg-white border-r shadow-md z-50">
+    <aside className="fixed left-0 h-screen w-fit overflow-y-auto bg-white border-r shadow-md z-50">
       <div className="flex flex-col h-full p-4">
         <Link to="/" className="mb-6">
           <div className="text-2xl font-semibold">Socilia</div>
@@ -46,26 +48,31 @@ const Sidebar = () => {
         {loggedInUser !== null ? (
           <div className="flex flex-col flex-grow space-y-4">
             <SearchUserSheet />
-            <NotificationsSheet />
+            <NotificationsSheet/>
             <div onClick={() => navigate("/create")} className="flex items-center cursor-pointer gap-2">
               <button className="text-3xl"><CiSquarePlus /></button>
-              <span className="font-semibold">Create Post</span>
+              <span className="font-semibold hidden md:inline">Create Post</span>
             </div>
             <MessagesSheet />
-            <div onClick={() => navigate("/profile")} className="flex items-center gap-2 py-2 cursor-pointer hover:bg-gray-100 rounded-lg px-2">
+            <div onClick={() => navigate("/profile")} className="flex items-center w-fit gap-2 py-2 cursor-pointer rounded-lg">
               {loggedInUser.user_image ? (
                 <img className="rounded-full w-8 h-8" src={loggedInUser.user_image} alt="" />
               ) : (
-                <RxAvatar className="text-4xl text-gray-600" />
+                <>
+                  <button className="text-4xl"><RxAvatar/></button>
+                </>
               )}
-              <span className="text-lg text-gray-600 font-semibold">
+              <span className="text-lg text-gray-600 font-semibold hidden md:inline">
                 {loggedInUser.username}
               </span>
             </div>
             <div className="mt-auto">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="w-full">Logout</Button>
+                  <div className="flex items-center gap-2">
+                    <button className="text-3xl md:hidden"><CiLogout/></button>
+                    <Button variant="outline" className="w-full hidden md:block">Logout</Button>
+                  </div>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>

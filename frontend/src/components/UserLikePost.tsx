@@ -1,8 +1,8 @@
-import  { useContext, useMemo, useState } from "react";
+import  { SetStateAction, useContext, useMemo} from "react";
 import { RxAvatar } from "react-icons/rx";
 import { Button } from "./ui/button";
 import { AppContext } from "@/Context/AppContext";
-import { AppContextType, Following } from "@/types";
+import { AppContextType, Following, FollowRequestsSent, followUserResponse } from "@/types";
 import { backendUrl } from "@/App";
 import axios from "axios";
 import { useToast } from "./ui/use-toast";
@@ -17,14 +17,16 @@ type Props = {
     };
   };
   following:Following[];
+  setFollowing:React.Dispatch<SetStateAction<Following[]>>;
+  followRequestsSent:FollowRequestsSent[];
+  setFollowRequestsSent:React.Dispatch<SetStateAction<FollowRequestsSent[]>>;
 };
 
-const UserLikePost = ({ liked_by,following}: Props) => {
+const UserLikePost = ({ liked_by,following,followRequestsSent,setFollowing,setFollowRequestsSent}: Props) => {
   const { loggedInUser } = useContext(AppContext) as AppContextType;
   const {toast} = useToast();
   const isFollowed = useMemo(() => following.some((followingUser:Following) => liked_by.liked_by.id===followingUser.following.id),[following,liked_by]);
-  const [isFollowing,setIsFollowing] = useState<boolean>(isFollowed);
-
+  const isRequested = useMemo(() => followRequestsSent.some((followRequest:FollowRequestsSent) => liked_by.liked_by.id===followRequest.request_receiver.id),[followRequestsSent,liked_by]);
 
   const followUser = async (followId: string) => {
     try {
@@ -38,7 +40,15 @@ const UserLikePost = ({ liked_by,following}: Props) => {
         }
       );
       console.log(response);
-      response.data.isFollow ? setIsFollowing(true) : setIsFollowing(false);
+      const data = response.data as followUserResponse;
+      if(data.unfollowed) {
+        setFollowing((prevFollowings) => prevFollowings.filter((following) => following.following.id!==followId));
+      } else if (data.isRequested) {
+        setFollowRequestsSent((prev) => [...prev , {request_receiver:data.newRequest?.request_receiver!}]);
+      } else {
+        // cancelled request
+        setFollowRequestsSent((prevRequests) => prevRequests.filter((followRequest:FollowRequestsSent) => followRequest.request_receiver.id!==followId));
+      }
     } catch (error) {
       console.log(error);
       toast({
@@ -70,7 +80,7 @@ const UserLikePost = ({ liked_by,following}: Props) => {
             {liked_by.liked_by.username}
           </span>
         </div>
-        {liked_by.liked_by.id !== loggedInUser?.id && <Button  variant={isFollowing ? "outline" :"default" } onClick={() => followUser(liked_by.liked_by.id)}>{isFollowing ? "Following" : "Follow"}</Button>}
+        {liked_by.liked_by.id !== loggedInUser?.id && <Button  variant={isFollowed ? "destructive" : isRequested ? "outline" : "default"} onClick={() => followUser(liked_by.liked_by.id)}>{isFollowed ? "Following" : isRequested ? "Requested"  : "Follow"}</Button>}
       </div>
     </>
   );

@@ -4,10 +4,10 @@ import { Outlet } from "react-router-dom";
 const Layout = () => {
   return (
     <>
-      <div className="flex">
-        <Sidebar />
-        <Outlet />
-      </div>
+    <div className="flex justify-center">
+      <Sidebar />
+      <Outlet />
+    </div>
     </>
   );
 };

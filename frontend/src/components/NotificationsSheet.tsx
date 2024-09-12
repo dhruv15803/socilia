@@ -39,8 +39,11 @@ const NotificationsSheet = () => {
         <Sheet>
             <SheetTrigger asChild>
                 <div className="flex items-center gap-2 cursor-pointer">
-                    <button className="text-xl"><IoIosNotificationsOutline/></button>
-                    <span className="font-semibold">Notifications</span>
+                    <div className="flex items-center">
+                        <button className="text-3xl"><IoIosNotificationsOutline/></button>
+                        <div className="border rounded-full px-2">{followRequestsCount}</div>
+                    </div>
+                    <span className="font-semibold hidden md:inline">Notifications</span>
                 </div>
             </SheetTrigger>
             <SheetContent side={"left"}>
