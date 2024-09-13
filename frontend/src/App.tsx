@@ -15,7 +15,7 @@ import UserPosts from "./Pages/UserPosts";
 import UserLikedPosts from "./Pages/UserLikedPosts";
 import ChatWindow from "./Pages/ChatWindow";
 import SocketContextProvider from "./Context/SocketContext";
-export const backendUrl = "http://localhost:5000";
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
   return (
