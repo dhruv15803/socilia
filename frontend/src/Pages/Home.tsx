@@ -36,7 +36,7 @@ const Home = () => {
 
   return (
     <>
-    <div className='flex my-12 flex-col gap-4 mx-8 md:mx-[20%] lg:mx-[25%] xl:mx-[35%]'>
+    <div className='flex my-12  flex-col gap-4 md:mx-[20%] lg:mx-[25%] xl:mx-[35%] 2xl:mx-[40%]'>
         {posts.length!==0 ? <>
             {posts.map((post:Post,index:number) => {
                 return <div key={post.id} ref={index===posts.length-1 ? lastPostRef:null}>

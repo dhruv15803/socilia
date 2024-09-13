@@ -132,7 +132,7 @@ const ChatWindow = () => {
 
   return (
     <>
-        <div className='flex flex-col border rounded-lg ml-64 w-full'>
+        <div className='flex flex-col border rounded-lg w-full'>
             <div className='flex justify-between items-center top-0 z-10 w-full bg-white p-4 border-b border-black'>
                 {(isUserLoading && !selectedUser) ? <>
                     <Loader width='20' height='20' color='black'/>

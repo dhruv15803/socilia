@@ -1,7 +1,7 @@
 import Loader from "@/components/Loader";
 import { useGetUser } from "@/hooks/useGetUser";
 import  {useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import blankAvatarImg from "../assets/blankAvatarImg.png";
 import { useGetFollowing } from "@/hooks/useGetFollowing";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import FollowingCard from "@/components/FollowingCard";
 import { useFollowRequestsSent } from "@/hooks/useFollowRequestsSent";
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const {loggedInUser} = useContext(AppContext) as AppContextType;
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const [isRequested,setIsRequested] = useState<boolean>(false);
@@ -133,12 +134,15 @@ const UserProfile = () => {
             src={user.user_image !== null ? user.user_image : blankAvatarImg}
             alt=""
           />
+          <div className="flex items-center gap-2">
+          <Button onClick={() => navigate(`/chat/${user.id}`)}>Message</Button>
           <Button
             onClick={followUserProfile}
             variant={isFollowing ? "destructive" : "default"}
           >
             {isFollowing ? "Unfollow" : isRequested ? "Requested" : "Follow"}
           </Button>
+          </div>
         </div>
         {(user.firstName !== null || user.lastName !== null) && (
             <div className="flex items-center gap-1 text-xl font-semibold">

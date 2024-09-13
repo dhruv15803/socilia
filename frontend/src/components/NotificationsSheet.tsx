@@ -68,4 +68,4 @@ const NotificationsSheet = () => {
   )
 }
 
-export default NotificationsSheet
+export default NotificationsSheet;

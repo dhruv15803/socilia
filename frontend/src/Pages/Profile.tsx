@@ -21,6 +21,8 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { backendUrl } from "@/App";
 import { useFollowRequestsSent } from "@/hooks/useFollowRequestsSent";
+import { Button } from "@/components/ui/button";
+import RequestsSentDialog from "@/components/RequestsSentDialog";
 
 
 
@@ -68,7 +70,7 @@ const Profile = () => {
   return (
     <>
         <div className="flex flex-col border rounded-lg p-4 gap-2 mt-12">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <img
               className="rounded-full w-28 aspect-auto"
               src={
@@ -78,7 +80,10 @@ const Profile = () => {
               }
               alt=""
             />
-            <EditProfileDialog />
+            <div className="flex items-center gap-2">
+              <RequestsSentDialog/>
+              <EditProfileDialog/>
+            </div>
           </div>
           {(loggedInUser?.firstName !== null ||
             loggedInUser?.lastName !== null) && (

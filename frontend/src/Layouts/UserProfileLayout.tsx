@@ -14,7 +14,7 @@ const UserProfileLayout = () => {
 
   return (
     <>
-      <div className="flex my-10 flex-col w-full mx-10 md:mx-[20%] lg:mx-[25%] xl:mx-[30%]">
+      <div className="flex my-10 flex-col mx-10 md:mx-[20%] lg:mx-[25%] xl:mx-[30%] ">
         <UserProfile />
         <div className="flex items-center gap-4 p-2 my-2">
           <NavLink

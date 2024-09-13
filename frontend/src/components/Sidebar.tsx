@@ -40,7 +40,7 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="fixed left-0 h-screen w-fit overflow-y-auto bg-white border-r shadow-md z-50">
+    <aside className="fixed left-0 justify-start h-screen w-fit overflow-y-auto bg-white border-r shadow-md z-50">
       <div className="flex flex-col h-full p-4">
         <Link to="/" className="mb-6">
           <div className="text-2xl font-semibold">Socilia</div>

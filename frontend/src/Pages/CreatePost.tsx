@@ -61,7 +61,7 @@ const CreatePost = () => {
 
   return (
     <>
-      <div className="flex flex-col mx-8 md:mx-[20%] lg:mx-[25%] xl:mx-[35%] p-4 gap-8 my-32 rounded-lg shadow-md w-full">
+      <div className="flex flex-col md:mx-[20%] lg:mx-[25%] xl:mx-[35%] p-4 gap-8 my-32 rounded-lg shadow-md">
         <div className="text-2xl font-semibold mb-4">Create Post</div>
         <div className="flex flex-col gap-2">
           <div className="text-xl font-semibold">Post Images</div>

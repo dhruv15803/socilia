@@ -75,7 +75,7 @@ const PostCard = ({ post,onRemovePost}: Props) => {
     <>
       <div className={`border rounded-lg flex flex-col ${isRemovingPost ? "opacity-50" : ""}`}>
         <div className="flex items-center p-4 justify-between border-b">
-          <div className="flex items-center gap-2">
+          <div onClick={() => navigate(`/profile/${post.post_author.id}`)} className="cursor-pointer flex items-center gap-2">
             {post.post_author.user_image !== null ? (
               <>
                 <img
@@ -118,7 +118,7 @@ const PostCard = ({ post,onRemovePost}: Props) => {
           {post.post_images.length !== 0 && (
             <div className="flex items-center justify-center gap-2 px-8">
               <img
-                className="rounded-lg w-full aspect-auto"
+                className="rounded-lg w-72 aspect-auto"
                 src={post.post_images[0]}
                 alt=""
               />

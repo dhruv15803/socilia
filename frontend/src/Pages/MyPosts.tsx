@@ -41,7 +41,7 @@ const MyPosts = () => {
         {posts.length!==0 ? <>
           {posts.map((post , index) => {
           return <div key={post.id} ref={index===posts.length-1  ?  lastPostRef : null }>
-              <PostCard onRemovePost={handleRemovePost} key={post.id} post={post} />;
+              <PostCard onRemovePost={handleRemovePost} key={post.id} post={post} />
               {(index===posts.length-1 && page < noOfPages) && <div className="flex items-center justify-center mt-4">
                   <Button onClick={() => setPage((prev) => prev+1)}>{isLoading  ? "Loading..." : "Load More"}</Button>
                 </div>}
