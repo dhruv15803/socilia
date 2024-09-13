@@ -22,7 +22,6 @@ import { RxAvatar } from "react-icons/rx";
 import NotificationsSheet from "./NotificationsSheet";
 import MessagesSheet from "./MessagesSheet";
 import { CiSquarePlus } from "react-icons/ci";
-import { useFollowRequests } from "@/hooks/useFollowRequests";
 
 const Sidebar = () => {
   const { loggedInUser, setLoggedInUser } = useContext(AppContext) as AppContextType;

@@ -1,5 +1,4 @@
 import Loader from '@/components/Loader';
-import Pagination from '@/components/Pagination';
 import PostCard from '@/components/PostCard';
 import { Button } from '@/components/ui/button';
 import { useLikedPosts } from '@/hooks/useLikedPosts'

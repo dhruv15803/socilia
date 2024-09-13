@@ -21,7 +21,6 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { backendUrl } from "@/App";
 import { useFollowRequestsSent } from "@/hooks/useFollowRequestsSent";
-import { Button } from "@/components/ui/button";
 import RequestsSentDialog from "@/components/RequestsSentDialog";
 
 
@@ -29,7 +28,7 @@ import RequestsSentDialog from "@/components/RequestsSentDialog";
 const Profile = () => {
   const { loggedInUser } = useContext(AppContext) as AppContextType;
   const {followersCount,isLoading: isFollowersLoading,followers} = useGetFollowers();
-  const {followRequestsSent,followRequestsSentCount,isLoading:isFollowRequestsSentLoading,setFollowRequestsSent,setFollowRequestsSentCount} = useFollowRequestsSent();
+  const {followRequestsSent,setFollowRequestsSent,setFollowRequestsSentCount} = useFollowRequestsSent();
   const {followingCount,setFollowing,setFollowingCount,isLoading: isFollowingLoading,following: followings} = useGetFollowing();
   const {toast} = useToast();
 

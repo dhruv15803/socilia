@@ -7,7 +7,7 @@ import { AppContext } from '@/Context/AppContext';
 import { SocketContext } from '@/Context/SocketContext';
 import { useConversation } from '@/hooks/useConversation';
 import { useGetUser } from '@/hooks/useGetUser';
-import { AppContextType, Message, sendMessageBody, SocketContextType } from '@/types';
+import { AppContextType, Message,  SocketContextType } from '@/types';
 import axios from 'axios';
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {  BsThreeDots } from 'react-icons/bs';

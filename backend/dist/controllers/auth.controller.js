@@ -24,6 +24,7 @@ const registerUser = async (req, res) => {
         return res.cookie("auth_token", jwtToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
             maxAge: 1000 * 60 * 60 * 24,
         }).json({ "success": true, "message": "User registered successfully", "user": newUser });
     }
@@ -57,6 +58,7 @@ const loginUser = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 1000 * 60 * 60 * 24,
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         }).json({ "success": true, "message": "user logged in", "user": user });
     }
     catch (error) {

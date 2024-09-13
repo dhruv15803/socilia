@@ -8,13 +8,12 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import { AiFillLike } from "react-icons/ai";
 import { AppContext } from "@/Context/AppContext";
-import { AppContextType, SocketContextType } from "@/types";
+import { AppContextType } from "@/types";
 import { backendUrl } from "@/App";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import PostLikesDialogBox from "@/components/PostLikesDialogBox";
 import PostCommentsDialog from "@/components/PostCommentsDialog";
-import { SocketContext } from "@/Context/SocketContext";
 
 const PostDetail = () => {
   const { toast } = useToast();

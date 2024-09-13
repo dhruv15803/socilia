@@ -33,7 +33,7 @@ const UserProfile = () => {
   const {followers,isLoading:isFollowersLoading,setFollowers,setFollowersCount,followersCount} = useGetFollowers(userId);
   const {following:followings,followingCount,isLoading:isFollowingLoading} = useGetFollowing(userId);
   const {following:myFollowings,setFollowing:setMyFollwings} = useGetFollowing();
-  const {followRequestsSent,followRequestsSentCount,isLoading:isFollowRequestsSentLoading,setFollowRequestsSent,setFollowRequestsSentCount} = useFollowRequestsSent();
+  const {followRequestsSent,setFollowRequestsSent,setFollowRequestsSentCount} = useFollowRequestsSent();
 
   console.log(followings);
 
