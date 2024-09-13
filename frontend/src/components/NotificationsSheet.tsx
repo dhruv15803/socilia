@@ -39,11 +39,13 @@ const NotificationsSheet = () => {
     useEffect(() => {
         const handleNewRequest = (newRequest:FollowRequests) => {
             setFollowRequests((prevRequests) => [...prevRequests , newRequest]);
+            setFollowRequestsCount((prev) => prev+1);
         }
 
         const handleRemoveRequest = (request_sender_id:string) => {
             const newRequests = followRequests.filter((followRequest:FollowRequests) => followRequest.request_sender.id!==request_sender_id);
             setFollowRequests(newRequests);
+            setFollowRequestsCount((prev) => prev-1);
         }
 
         socket?.on("sent_request",handleNewRequest);

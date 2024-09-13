@@ -1,6 +1,21 @@
 import { Request, response, Response } from "express";
 import { client, getSocketId, io } from "..";
 
+type  requestType = {
+    request_sender: {
+        id: string;
+        username: string;
+        email: string;
+        user_image: string | null;
+    };
+    request_receiver: {
+        id: string;
+        username: string;
+        email: string;
+        user_image: string | null;
+    };
+};
+
 
 const fetchUsers = async (req:Request,res:Response) => {
     try {
@@ -41,7 +56,7 @@ const followRequest = async (req:Request,res:Response) => {
         }
         // if there is already a request send to following from follower (Cancel request)
         // else create follow request
-        let newRequest = null;
+        let newRequest:requestType | null=null;
         const requested = await client.followRequests.findUnique({where:{request_sender_id_request_receiver_id:{
             request_sender_id:follower.id,
             request_receiver_id:following.id,
@@ -61,6 +76,14 @@ const followRequest = async (req:Request,res:Response) => {
         } else {
             // create request
             newRequest = await client.followRequests.create({data:{request_sender_id:follower.id,request_receiver_id:following.id},include:{
+                request_sender:{
+                    select:{
+                        id:true,
+                        username:true,
+                        user_image:true,
+                        email:true,
+                    }
+                },
                 request_receiver:{
                     select:{
                         id:true,
@@ -73,7 +96,9 @@ const followRequest = async (req:Request,res:Response) => {
             isRequested = true;
             responseMsg="follow request sent";
             if(receiverSocketId) {
-                io.to(receiverSocketId).emit("sent_request",newRequest)
+                io.to(receiverSocketId).emit("sent_request", {
+                    "request_sender":newRequest.request_sender,
+                })
             }
         }
         return res.status(200).json({"success":true,"message":responseMsg,isRequested,"unfollowed":false,newRequest});

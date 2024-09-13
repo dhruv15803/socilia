@@ -61,7 +61,7 @@ const UserProfile = () => {
         setFollowRequestsSent((prev) => [...prev , {request_receiver:data.newRequest?.request_receiver!}]);
       } else {
         setIsRequested(false);
-        const newFollowRequestsSent = followRequestsSent.filter((followRequest) => followRequest.request_receiver.id!==loggedInUser?.id);
+        const newFollowRequestsSent = followRequestsSent.filter((followRequest) => followRequest.request_receiver.id!==userId);
         setFollowRequestsSent(newFollowRequestsSent);
       }
     } catch (error) {

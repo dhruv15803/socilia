@@ -57,6 +57,14 @@ const followRequest = async (req, res) => {
         else {
             // create request
             newRequest = await __1.client.followRequests.create({ data: { request_sender_id: follower.id, request_receiver_id: following.id }, include: {
+                    request_sender: {
+                        select: {
+                            id: true,
+                            username: true,
+                            user_image: true,
+                            email: true,
+                        }
+                    },
                     request_receiver: {
                         select: {
                             id: true,
@@ -69,7 +77,9 @@ const followRequest = async (req, res) => {
             isRequested = true;
             responseMsg = "follow request sent";
             if (receiverSocketId) {
-                __1.io.to(receiverSocketId).emit("sent_request", newRequest);
+                __1.io.to(receiverSocketId).emit("sent_request", {
+                    "request_sender": newRequest.request_sender,
+                });
             }
         }
         return res.status(200).json({ "success": true, "message": responseMsg, isRequested, "unfollowed": false, newRequest });
