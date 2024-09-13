@@ -1,5 +1,5 @@
 import { Request, response, Response } from "express";
-import { client } from "..";
+import { client, getSocketId, io } from "..";
 
 
 const fetchUsers = async (req:Request,res:Response) => {
@@ -20,6 +20,7 @@ const followRequest = async (req:Request,res:Response) => {
         const follower = await client.user.findUnique({where:{id:userId}});
         const following = await client.user.findUnique({where:{id:followId}});
         if(!follower || !following || follower.id===following.id) return res.status(400).json({"success":false,"message":"user and following party not available"});
+        const receiverSocketId = getSocketId(following.id);
 
         // if user is already followingg user with id:followId => remove follow and return response
         const isFollow = await client.following.findUnique({where:{follower_id_following_id:{
@@ -53,8 +54,10 @@ const followRequest = async (req:Request,res:Response) => {
                 request_sender_id:requested.request_sender_id,
                 request_receiver_id:requested.request_receiver_id,
             }}});
+
             isRequested=false;
             responseMsg="cancelled follow request";
+            io.to(receiverSocketId!).emit("remove_request",requested.request_sender_id);
         } else {
             // create request
             newRequest = await client.followRequests.create({data:{request_sender_id:follower.id,request_receiver_id:following.id},include:{
@@ -69,6 +72,9 @@ const followRequest = async (req:Request,res:Response) => {
             }});
             isRequested = true;
             responseMsg="follow request sent";
+            if(receiverSocketId) {
+                io.to(receiverSocketId).emit("sent_request",newRequest)
+            }
         }
         return res.status(200).json({"success":true,"message":responseMsg,isRequested,"unfollowed":false,newRequest});
     } catch (error) {

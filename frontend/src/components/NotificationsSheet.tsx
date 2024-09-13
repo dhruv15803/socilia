@@ -9,13 +9,15 @@ import {
 import { useFollowRequests } from "@/hooks/useFollowRequests";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import Loader from "./Loader";
-import { FollowRequests } from "@/types";
+import { FollowRequests, SocketContextType } from "@/types";
 import FollowRequestCard from "./FollowRequestCard";
 import axios from "axios";
 import { backendUrl } from "@/App";
+import { useContext, useEffect } from "react";
+import { SocketContext } from "@/Context/SocketContext";
 
 const NotificationsSheet = () => {
-
+    const {socket} = useContext(SocketContext) as SocketContextType;
     const {followRequests,followRequestsCount,isLoading,setFollowRequests,setFollowRequestsCount} = useFollowRequests();
 
 
@@ -33,6 +35,26 @@ const NotificationsSheet = () => {
             console.log(error);
         }
     }
+
+    useEffect(() => {
+        const handleNewRequest = (newRequest:FollowRequests) => {
+            setFollowRequests((prevRequests) => [...prevRequests , newRequest]);
+        }
+
+        const handleRemoveRequest = (request_sender_id:string) => {
+            const newRequests = followRequests.filter((followRequest:FollowRequests) => followRequest.request_sender.id!==request_sender_id);
+            setFollowRequests(newRequests);
+        }
+
+        socket?.on("sent_request",handleNewRequest);
+
+        socket?.on("remove_request",handleRemoveRequest);
+        
+        return () => {
+            socket?.off("sent_request",handleNewRequest);
+            socket?.off("remove_request",handleRemoveRequest);
+        }
+    },[socket])
 
   return (
     <>

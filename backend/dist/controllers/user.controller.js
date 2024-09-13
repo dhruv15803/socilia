@@ -21,6 +21,7 @@ const followRequest = async (req, res) => {
         const following = await __1.client.user.findUnique({ where: { id: followId } });
         if (!follower || !following || follower.id === following.id)
             return res.status(400).json({ "success": false, "message": "user and following party not available" });
+        const receiverSocketId = (0, __1.getSocketId)(following.id);
         // if user is already followingg user with id:followId => remove follow and return response
         const isFollow = await __1.client.following.findUnique({ where: { follower_id_following_id: {
                     follower_id: follower.id,
@@ -51,6 +52,7 @@ const followRequest = async (req, res) => {
                     } } });
             isRequested = false;
             responseMsg = "cancelled follow request";
+            __1.io.to(receiverSocketId).emit("remove_request", requested.request_sender_id);
         }
         else {
             // create request
@@ -66,6 +68,9 @@ const followRequest = async (req, res) => {
                 } });
             isRequested = true;
             responseMsg = "follow request sent";
+            if (receiverSocketId) {
+                __1.io.to(receiverSocketId).emit("sent_request", newRequest);
+            }
         }
         return res.status(200).json({ "success": true, "message": responseMsg, isRequested, "unfollowed": false, newRequest });
     }

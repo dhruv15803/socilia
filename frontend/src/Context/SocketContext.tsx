@@ -21,7 +21,7 @@ const SocketContextProvider = ({children}:{children:React.ReactNode}) => {
             setSocket(socket);
             socket.on("getOnlineUsers",(users) => {
                 setOnlineUsers(users);
-            } )
+            })
         } else {
             if(socket) {
                 socket.close();

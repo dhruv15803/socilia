@@ -10,7 +10,6 @@ cloudinary.config({
     api_secret:process.env.CLOUDINARY_API_SECRET,
 });
 
-
 const uploadFiles = async (req:Request,res:Response) => {
     try {
         if(!req.files || !Array.isArray(req.files)) return res.status(400).json({"success":false,"message":"Files not available"});
